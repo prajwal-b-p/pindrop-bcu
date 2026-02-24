@@ -1,79 +1,108 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-7">
+<div class="row justify-content-center pt-4">
+    <div class="col-lg-8 col-xl-7">
+        <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ url_for('item_detail', item_id=item.id) }}"
                         class="text-decoration-none">{{ item.title }}</a></li>
-                <li class="breadcrumb-item active">Claim</li>
+                <li class="breadcrumb-item active">Verification</li>
             </ol>
         </nav>
 
-        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-            <div class="card-header bg-success text-white py-4 px-5">
-                <h3 class="fw-bold mb-1"><i class="bi bi-shield-check me-2"></i>Verify Item Return</h3>
-                <p class="mb-0 text-white-50">Enter the verification code provided by the claimant to confirm the
-                    return.</p>
+        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
+            <div class="card-header bg-dark text-white p-5 position-relative">
+                <div class="hero-gradient opacity-25"></div>
+                <div class="position-relative z-index-1">
+                    <span class="badge bg-success mb-3 px-3 py-2" style="border-radius: 12px; font-size: 0.75rem;">
+                        <i class="bi bi-shield-check me-1"></i> Return Protocol
+                    </span>
+                    <h2 class="display-6 fw-bold mb-2">Verify Item Return</h2>
+                    <p class="text-light opacity-75 mb-0">Authenticate the claimant using their unique discovery token.
+                    </p>
+                </div>
             </div>
 
-            <!-- Found Item Summary -->
-            <div class="card-body border-bottom bg-light py-4 px-5">
-                <div class="d-flex align-items-center">
+            <!-- Item Mini-Card -->
+            <div class="card-body bg-light bg-opacity-50 border-bottom p-4">
+                <div class="d-flex align-items-center gap-4">
                     {% if item.image_file %}
-                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" alt="{{ item.title }}"
-                        class="rounded-3 me-4 shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+                        class="rounded-4 shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
                     {% else %}
-                    <div class="bg-white rounded-3 me-4 d-flex align-items-center justify-content-center shadow-sm"
-                        style="width: 80px; height: 80px;">
-                        <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                    <div class="stat-icon bg-white text-muted" style="width: 100px; height: 100px;">
+                        <i class="bi bi-image fs-2"></i>
                     </div>
                     {% endif %}
                     <div>
-                        <h5 class="fw-bold mb-1">{{ item.title }}</h5>
-                        <span class="badge bg-success me-2">FOUND</span>
-                        <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ item.location }}</small>
+                        <h4 class="fw-bold mb-1">{{ item.title }}</h4>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <span
+                                class="badge bg-success-subtle text-success border border-success-subtle px-2">FOUND</span>
+                            <small class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i>{{ item.location }}</small>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Claim Form -->
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 mb-3"
-                        style="width: 80px; height: 80px;">
-                        <i class="bi bi-qr-code text-success" style="font-size: 2.5rem;"></i>
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-5">
+                    <div class="stat-icon bg-success-subtle text-success mx-auto mb-3"
+                        style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="bi bi-input-cursor-text"></i>
                     </div>
-                    <p class="text-muted">Ask the person claiming this item for their unique verification code from
-                        their <strong>LOST</strong> report.</p>
+                    <h5 class="fw-bold text-dark">Enter Ownership Code</h5>
+                    <p class="text-secondary small mb-0 px-md-5">Ask the claimant for the 8-digit verification code
+                        found in their <strong>LOST</strong> report dashboard. This ensures the item reaches its
+                        rightful owner.</p>
                 </div>
 
                 <form method="POST" action="">
                     {{ form.hidden_tag() }}
-                    <div class="form-group mb-4">
-                        {{ form.verification_code.label(class="form-label fw-bold small text-uppercase text-muted") }}
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-secondary small text-uppercase mb-3 d-block text-center"
+                            style="letter-spacing: 0.1em;">Claimant's Unique Token</label>
                         {% if form.verification_code.errors %}
-                        {{ form.verification_code(class="form-control is-invalid form-control-lg text-center fw-bold",
-                        style="letter-spacing: 6px; font-size: 1.5rem; font-family: monospace;", placeholder="XXXXXXXX",
-                        maxlength="8") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.verification_code.errors %}
-                            <span>{{ error }}</span>
-                            {% endfor %}
+                        {{ form.verification_code(class="form-control form-control-lg is-invalid text-center fw-bold
+                        shadow-sm",
+                        style="letter-spacing: 0.5em; font-size: 2.5rem; font-family: 'Outfit', sans-serif; background:
+                        #fff;",
+                        placeholder="XXXXXXXX", maxlength="8") }}
+                        <div class="invalid-feedback text-center mt-3">
+                            {% for error in form.verification_code.errors %}<span>{{ error }}</span>{% endfor %}
                         </div>
                         {% else %}
                         {{ form.verification_code(class="form-control form-control-lg bg-light border-0 text-center
-                        fw-bold", style="letter-spacing: 6px; font-size: 1.5rem; font-family: monospace;",
+                        fw-bold",
+                        style="letter-spacing: 0.5em; font-size: 2.5rem; font-family: 'Outfit', sans-serif;",
                         placeholder="XXXXXXXX", maxlength="8") }}
                         {% endif %}
                     </div>
-                    <div class="d-grid">
-                        {{ form.submit(class="btn btn-success btn-lg fw-bold shadow-sm py-3") }}
+
+                    <div class="d-grid gap-3">
+                        {{ form.submit(class="btn btn-success btn-lg py-3 fw-bold shadow-premium", value="Verify &
+                        Complete Return") }}
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}"
+                            class="btn btn-link text-muted text-decoration-none small">
+                            Cancel Verification
+                        </a>
                     </div>
                 </form>
+            </div>
+
+            <div class="card-footer bg-warning bg-opacity-10 border-0 p-4">
+                <div class="d-flex gap-3">
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                    <div class="small text-warning-emphasis">
+                        <strong>Security Note:</strong> Completion of this step will mark the item as
+                        <strong>RECOVERED</strong>. This action is final and helps maintain community trust.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

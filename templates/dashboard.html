@@ -1,112 +1,170 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-4 pt-4">
-    <div>
-        <h1 class="fw-bold mb-2">My Control Center</h1>
-        <p class="text-muted mb-0">Track your reports, manage matches, and see your impact.</p>
-    </div>
-    <a href="{{ url_for('post_item') }}" class="btn btn-primary px-4 py-3 shadow-premium">
-        <i class="bi bi-plus-lg me-2"></i>Create New Report
-    </a>
-</div>
-
-<!-- Stats Dashboard -->
-<div class="row g-4 mb-5">
-    <div class="col-lg-4 col-md-6">
-        <div class="stat-widget">
-            <div class="stat-icon bg-primary text-white shadow-sm" style="background: var(--brand-primary) !important;">
-                <i class="bi bi-layers-half"></i>
+<div class="row pt-4">
+    <!-- Sidebar: Impact & Profile -->
+    <div class="col-lg-3 mb-5">
+        <div class="card border-0 shadow-premium p-4 sticky-top" style="top: 100px; border-radius: 24px;">
+            <div class="text-center mb-4">
+                <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3"
+                    style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h5 class="fw-bold mb-1">{{ current_user.username }}</h5>
+                <p class="small text-muted mb-0">{{ current_user.email }}</p>
             </div>
+
+            <hr class="opacity-10 my-4">
+
+            <div class="space-y-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.65rem;">Trust Score</small>
+                    <span class="badge bg-success-subtle text-success">Verified User</span>
+                </div>
+                <div class="progress mb-4" style="height: 6px;">
+                    <div class="progress-bar bg-success" style="width: 95%"></div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon bg-light text-primary"
+                            style="width: 40px; height: 40px; font-size: 1.2rem;">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Community Hero</h6>
+                            <small class="text-secondary opacity-75">Level 3 Contributor</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ url_for('post_item') }}" class="btn btn-primary w-100 py-3 fw-bold shadow-premium mt-2"
+                style="border-radius: 14px;">
+                <i class="bi bi-plus-lg me-2"></i> Report Item
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content: Active Reports -->
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
             <div>
-                <h3 class="fw-bold mb-0">{{ items|length }}</h3>
-                <p class="text-muted small mb-0">Active Reports</p>
+                <h2 class="fw-800 mb-1">Impact Dashboard</h2>
+                <p class="text-secondary mb-0">Managing {{ items|length }} reported items across the community.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-light btn-sm px-3 shadow-subtle border"><i class="bi bi-download me-1"></i>
+                    Export Data</button>
+                <button class="btn btn-light btn-sm px-3 shadow-subtle border"><i class="bi bi-gear-fill"></i></button>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="stat-widget">
-            <div class="stat-icon bg-danger text-white shadow-sm" style="background: var(--danger) !important;">
-                <i class="bi bi-exclamation-triangle"></i>
+
+        <!-- High Level Stats Row -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
+                    style="border-radius: 18px;">
+                    <div class="stat-icon bg-danger-subtle text-danger" style="width: 48px; height: 48px;"><i
+                            class="bi bi-exclamation-triangle-fill"></i></div>
+                    <div>
+                        <h4 class="fw-800 mb-0">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h4>
+                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Active
+                            Losses</small>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="fw-bold mb-0">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h3>
-                <p class="text-muted small mb-0">Lost Items</p>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
+                    style="border-radius: 18px;">
+                    <div class="stat-icon bg-success-subtle text-success" style="width: 48px; height: 48px;"><i
+                            class="bi bi-check-circle-fill"></i></div>
+                    <div>
+                        <h4 class="fw-800 mb-0">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h4>
+                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Successful
+                            Returns</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
+                    style="border-radius: 18px;">
+                    <div class="stat-icon bg-primary-subtle text-primary" style="width: 48px; height: 48px;"><i
+                            class="bi bi-people-fill"></i></div>
+                    <div>
+                        <h4 class="fw-800 mb-0">12</h4>
+                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">People
+                            Helped</small>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4 col-md-12">
-        <div class="stat-widget">
-            <div class="stat-icon bg-success text-white shadow-sm"
-                style="background: var(--brand-secondary) !important;">
-                <i class="bi bi-check2-circle"></i>
+
+        <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+            <i class="bi bi-list-task text-primary"></i> Active Reports List
+        </h5>
+
+        <!-- Reports List: High Density -->
+        <div class="space-y-3 mb-5">
+            {% for item in items %}
+            <div class="card border-0 shadow-premium p-3 fade-up"
+                style="border-radius: 20px; animation-delay: {{ loop.index0 * 0.05 }}s;">
+                <div class="row align-items-center g-3">
+                    <div class="col-auto">
+                        {% if item.image_file %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+                            class="rounded-4 shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted opacity-25"
+                            style="width: 64px; height: 64px;">
+                            <i class="bi bi-image fs-4"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h6 class="fw-bold mb-0 text-dark">{{ item.title }}</h6>
+                            <span class="badge {% if item.type == 'LOST' %}bg-danger{% else %}bg-success{% endif %}"
+                                style="font-size: 0.55rem; padding: 0.3rem 0.6rem;">{{ item.type }}</span>
+                            {% if item.status == 'CLAIMED' %}
+                            <span class="badge bg-secondary"
+                                style="font-size: 0.55rem; padding: 0.3rem 0.6rem;">RECOVERED</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex gap-3 text-secondary" style="font-size: 0.75rem;">
+                            <span><i class="bi bi-geo-alt-fill me-1 text-primary-subtle"></i> {{ item.location }}</span>
+                            <span><i class="bi bi-calendar3 me-1 text-primary-subtle"></i> {{
+                                item.created_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        {% if item.type == 'LOST' and item.status == 'OPEN' %}
+                        <div
+                            class="bg-primary bg-opacity-5 p-2 px-3 rounded-3 border border-primary border-opacity-10 d-flex flex-column align-items-center">
+                            <small class="text-uppercase fw-bold text-primary"
+                                style="font-size: 0.5rem; letter-spacing: 0.05em;">Token</small>
+                            <span class="font-monospace fw-bold text-primary small" style="letter-spacing: 0.1em;">{{
+                                item.verification_code }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('item_detail', item_id=item.id) }}"
+                                class="btn btn-light btn-sm px-3 fw-bold border-0"
+                                style="background: var(--brand-primary-soft); color: var(--brand-primary); border-radius: 12px;">Manage</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="fw-bold mb-0">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h3>
-                <p class="text-muted small mb-0">Successfully Returned</p>
+            {% else %}
+            <div class="text-center py-5 bg-white rounded-5 shadow-subtle border">
+                <i class="bi bi-journal-x display-4 text-muted opacity-25 mb-3 d-block"></i>
+                <h5 class="fw-bold">No active reports found</h5>
+                <p class="text-secondary small">Your reported items will appear here.</p>
+                <a href="{{ url_for('post_item') }}" class="btn btn-primary px-4 py-2 mt-2">Create First Post</a>
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>
-
-<!-- Items Section -->
-<div class="row g-4">
-    {% for item in items %}
-    <div class="col-lg-4 col-md-6">
-        <div class="card item-card-hover">
-            <div class="card-img-container">
-                <div class="position-absolute top-0 start-0 p-3 z-index-1 d-flex flex-column gap-2">
-                    <span class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} shadow-sm">
-                        <i class="bi bi-{{ 'exclamation-circle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>
-                        {{ item.type }}
-                    </span>
-                    {% if item.status == 'CLAIMED' %}
-                    <span class="badge claimed-badge"><i class="bi bi-patch-check-fill me-1"></i> RETURNED</span>
-                    {% endif %}
-                </div>
-                {% if item.image_file %}
-                <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" alt="{{ item.title }}">
-                {% else %}
-                <div
-                    class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted opacity-50">
-                    <i class="bi bi-image" style="font-size: 3rem;"></i>
-                </div>
-                {% endif %}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-truncate">{{ item.title }}</h5>
-
-                <div class="d-flex align-items-center gap-3 text-muted small mb-4">
-                    <span><i class="bi bi-geo-alt-fill me-1 text-primary"></i> {{ item.location }}</span>
-                    <span><i class="bi bi-calendar3 me-1"></i> {{ item.created_at.strftime('%b %d') }}</span>
-                </div>
-
-                {% if item.type == 'LOST' and item.verification_code and item.user_id == current_user.id and item.status
-                == 'OPEN' %}
-                <div class="verification-code-box mb-4 py-3 px-2"
-                    style="background: #f8fafc; border: 1px dashed var(--brand-primary); border-radius: 12px;">
-                    <small class="text-uppercase fw-bold text-primary mb-2 d-block"
-                        style="font-size: 0.6rem; letter-spacing: 0.1em;">
-                        <i class="bi bi-shield-lock-fill me-1"></i> Ownership Token
-                    </small>
-                    <div class="h3 font-monospace fw-bold mb-0 text-primary" style="letter-spacing: 0.2em;">{{
-                        item.verification_code }}</div>
-                </div>
-                {% endif %}
-
-                <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-light w-100 mt-2">
-                    Manage Report <i class="bi bi-sliders2 ms-2"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    {% else %}
-    <div class="col-12 py-5 text-center text-muted">
-        <div class="opacity-25 mb-4"><i class="bi bi-folder2-open" style="font-size: 5rem;"></i></div>
-        <h3>No active reports found</h3>
-        <p>You haven't posted any items yet. Start helping your community today.</p>
-        <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3 px-5">Post Your First Item</a>
-    </div>
-    {% endfor %}
-</div>
-
 {% endblock %}

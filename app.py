@@ -84,9 +84,20 @@ def load_user(user_id):
 @app.route("/")
 @app.route("/home")
 def home():
-    # Show recent OPEN items
-    items = Item.query.filter_by(status='OPEN').order_by(Item.created_at.desc()).limit(6).all()
-    return render_template('home.html', items=items)
+    category_id = request.args.get('category', type=int)
+    item_type = request.args.get('type')
+    
+    query = Item.query.filter_by(status='OPEN')
+    
+    if category_id:
+        query = query.filter_by(category_id=category_id)
+    
+    if item_type and item_type != 'ALL':
+        query = query.filter_by(type=item_type)
+        
+    items = query.order_by(Item.created_at.desc()).limit(20).all()
+    categories = Category.query.all()
+    return render_template('home.html', items=items, categories=categories)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():

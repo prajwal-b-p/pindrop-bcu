@@ -1,116 +1,143 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section rounded-4 shadow-lg overflow-hidden mb-5 position-relative">
+<section class="hero-section text-center overflow-hidden">
     <div class="hero-gradient"></div>
-    <div class="row align-items-center position-relative" style="z-index: 2;">
-        <div class="col-lg-6 p-5">
-            <span class="badge bg-white text-primary fw-bold mb-3 px-3 py-2 shadow-sm"><i class="bi bi-stars me-1"></i>
-                Campus Platform</span>
-            <h1 class="display-4 fw-bold text-white lh-1 mb-3">Find what's lost.<br>Return what's found.</h1>
-            <p class="lead text-white-50 mb-4">A community-driven platform to reconnect people with their belongings.
-                Secure verification codes ensure rightful ownership.</p>
-            <div class="d-flex gap-3 flex-wrap">
-                <a href="{{ url_for('post_item') }}" class="btn btn-light btn-lg px-4 fw-bold shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>Post an Item
-                </a>
-                <a href="{{ url_for('search') }}" class="btn btn-outline-light btn-lg px-4">
-                    <i class="bi bi-search me-2"></i>Search Items
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center py-5">
-            <div class="hero-floating-card glass-card p-4 rounded-4 text-white text-center shadow-lg">
-                <i class="bi bi-shield-lock-fill" style="font-size: 4rem;"></i>
-                <h4 class="fw-bold mt-3 mb-1">Secure Verification</h4>
-                <p class="text-white-50 mb-0 small">Each lost item gets a unique code for safe claiming.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- How It Works -->
-<div class="row g-4 mb-5">
-    <div class="col-12 text-center mb-2">
-        <h2 class="fw-bold">How It Works</h2>
-        <p class="text-muted">Three simple steps to reunite with your belongings</p>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4 step-card">
-            <div class="step-number">1</div>
-            <i class="bi bi-pencil-square text-primary mb-3" style="font-size: 2.5rem;"></i>
-            <h5 class="fw-bold">Report</h5>
-            <p class="text-muted small mb-0">Post a lost or found item with a photo and details.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4 step-card">
-            <div class="step-number">2</div>
-            <i class="bi bi-shield-lock text-primary mb-3" style="font-size: 2.5rem;"></i>
-            <h5 class="fw-bold">Verify</h5>
-            <p class="text-muted small mb-0">Lost items get a unique code. Share it to prove ownership.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4 step-card">
-            <div class="step-number">3</div>
-            <i class="bi bi-hand-thumbs-up text-primary mb-3" style="font-size: 2.5rem;"></i>
-            <h5 class="fw-bold">Claim</h5>
-            <p class="text-muted small mb-0">Match the code and claim your item back safely.</p>
-        </div>
-    </div>
-</div>
-
-<!-- Recent Items -->
-<h2 class="fw-bold mb-1">Recent Items</h2>
-<p class="text-muted mb-4">Browse the latest lost and found reports</p>
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for item in items %}
-    <div class="col">
-        <div class="card h-100 border-0 shadow-sm rounded-4 position-relative overflow-hidden item-card-hover">
-            <span
-                class="position-absolute top-0 end-0 m-3 badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} shadow-sm z-1 px-3 py-2">
-                <i class="bi bi-{{ 'exclamation-triangle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>{{
-                item.type }}
-            </span>
-            {% if item.status == 'CLAIMED' %}
-            <span class="position-absolute top-0 start-0 m-3 badge claimed-badge shadow-sm z-1">CLAIMED</span>
-            {% endif %}
-
-            {% if item.image_file %}
-            <div style="height: 200px; overflow: hidden;">
-                <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100"
-                    style="object-fit: cover; transition: transform 0.4s;" alt="{{ item.title }}">
-            </div>
-            {% else %}
-            <div class="d-flex align-items-center justify-content-center text-muted"
-                style="height: 200px; background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 100%);">
-                <i class="bi bi-image" style="font-size: 3rem; opacity: 0.25;"></i>
-            </div>
-            {% endif %}
-
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-truncate">{{ item.title }}</h5>
-                <p class="card-text text-muted small mb-3" style="min-height: 2.5rem;">{{ item.description[:80] }}{% if
-                    item.description|length > 80 %}...{% endif %}</p>
-                <div class="d-flex justify-content-between text-muted small">
-                    <span><i class="bi bi-geo-alt me-1"></i>{{ item.location }}</span>
-                    <span><i class="bi bi-calendar me-1"></i>{{ item.date_occurred.strftime('%b %d, %Y') }}</span>
+    <div class="container position-relative z-index-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 fade-up text-center h-100 flex-column d-flex align-items-center">
+                <span class="badge bg-white text-primary mb-4 shadow-sm border px-3 py-2"
+                    style="border-radius: 12px; font-size: 0.8rem;">
+                    <i class="bi bi-patch-check-fill me-1"></i> Community Driven Platform
+                </span>
+                <h1 class="text-white mb-4 display-3 h-100 flex-column d-flex align-items-center">Reuniting
+                    Belongings,<br>Restoring Peace.</h1>
+                <p class="text-light opacity-75 mb-5 mx-auto h-100 flex-column d-flex align-items-center"
+                    style="font-size: 1.2rem;">The most trusted platform for returning lost items. Simple, secure, and
+                    built for your campus community.</p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('post_item') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-lg"></i> Post an Item
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-light btn-lg">
+                        <i class="bi bi-search"></i> Browse Recent
+                    </a>
                 </div>
             </div>
-            <div class="card-footer bg-transparent border-0 pb-3 px-3 pt-0">
-                <a href="{{ url_for('item_detail', item_id=item.id) }}"
-                    class="btn btn-outline-primary w-100 fw-bold rounded-3">View Details</a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5 mb-5">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-lg-6 mx-auto">
+                <h2 class="fw-bold mb-3">Simple & Secure Process</h2>
+                <p class="text-muted">Our community-driven approach makes it easy to find what you've lost.</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card p-4 border-0 shadow-sm h-100 text-center">
+                    <div class="stat-icon bg-primary text-white mx-auto mb-4">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">1. Report Item</h5>
+                    <p class="text-muted small">Upload details and photos of the item you found or lost. It's quick and
+                        easy.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 border-0 shadow-sm h-100 text-center">
+                    <div class="stat-icon bg-info text-white mx-auto mb-4">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">2. Secure Match</h5>
+                    <p class="text-muted small">Each lost item gets a unique code. This ensures items go back to their
+                        rightful owners.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 border-0 shadow-sm h-100 text-center">
+                    <div class="stat-icon bg-success text-white mx-auto mb-4">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">3. Reunite</h5>
+                    <p class="text-muted small">Match the code with the finder and get your belongings back safely.</p>
+                </div>
             </div>
         </div>
     </div>
-    {% else %}
-    <div class="col-12 text-center py-5">
-        <div class="text-muted mb-3"><i class="bi bi-inbox" style="font-size: 4rem; opacity: 0.2;"></i></div>
-        <h3 class="fw-light text-muted">No items posted yet.</h3>
-        <p class="text-muted">Be the first to help the community!</p>
-        <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3 px-4">Post Now</a>
+</section>
+
+<!-- Recent Items -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Latest Discoveries</h2>
+                <p class="text-muted mb-0">Discover the most recent reports from your community.</p>
+            </div>
+            <a href="{{ url_for('search') }}" class="btn btn-light d-none d-md-flex">See All Items <i
+                    class="bi bi-arrow-right ms-2"></i></a>
+        </div>
+
+        <div class="row g-4">
+            {% for item in items %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card item-card-hover">
+                    <div class="card-img-container">
+                        <div class="position-absolute top-0 start-0 p-3 z-index-1 d-flex flex-column gap-2">
+                            <span class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} shadow-sm">
+                                <i
+                                    class="bi bi-{{ 'exclamation-circle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>
+                                {{ item.type }}
+                            </span>
+                            {% if item.status == 'CLAIMED' %}
+                            <span class="badge claimed-badge"><i class="bi bi-stars me-1"></i> CLAIMED</span>
+                            {% endif %}
+                        </div>
+                        {% if item.image_file %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+                            alt="{{ item.title }}">
+                        {% else %}
+                        <div
+                            class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted opacity-50">
+                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ item.title }}</h5>
+                        <p class="text-muted small mb-4"
+                            style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3rem;">
+                            {{ item.description }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center py-3 border-top mt-auto">
+                            <div class="d-flex align-items-center gap-2 text-muted small">
+                                <i class="bi bi-geo-alt-fill text-primary"></i>
+                                <span>{{ item.location }}</span>
+                            </div>
+                            <div class="text-muted small">
+                                <i class="bi bi-calendar3 me-1"></i> {{ item.date_occurred.strftime('%b %d') }}
+                            </div>
+                        </div>
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-light w-100 mt-2">View
+                            Details</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 py-5 text-center">
+                <div class="opacity-25 mb-3"><i class="bi bi-box-seam" style="font-size: 5rem;"></i></div>
+                <h4 class="text-muted">No reports found in your area</h4>
+                <p class="text-muted">Be the first to report something and help a colleague!</p>
+                <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3">Create First Post</a>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    {% endfor %}
-</div>
+</section>
+
 {% endblock %}

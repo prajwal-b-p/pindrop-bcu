@@ -1,223 +1,202 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Item Details</li>
-            </ol>
-        </nav>
+<div class="row justify-content-center pt-4">
+    <div class="col-lg-11">
+        <!-- Breadcrumb & Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none">Home</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}"
+                            class="text-decoration-none">Browse</a></li>
+                    <li class="breadcrumb-item active">Details</li>
+                </ol>
+            </nav>
+            <div class="small text-muted">Posted {{ item.created_at.strftime('%B %d, %Y') }}</div>
+        </div>
 
-        <div class="card detail-card shadow-lg overflow-hidden border-0 rounded-4">
+        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
             <div class="row g-0">
-                <!-- Image Column -->
-                <div class="col-md-5 position-relative"
-                    style="min-height: 450px; background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 100%);">
+                <!-- Image Section -->
+                <div class="col-lg-6 position-relative" style="background: #f8fafc; min-height: 500px;">
                     {% if item.image_file %}
-                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
-                        class="img-fluid w-100 h-100" style="object-fit: cover;" alt="{{ item.title }}">
+                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100"
+                        style="object-fit: cover;" alt="{{ item.title }}">
                     {% else %}
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
-                        <i class="bi bi-image" style="font-size: 5rem; opacity: 0.3;"></i>
-                        <p class="mt-3 fw-medium">No Image Provided</p>
+                    <div
+                        class="d-flex flex-column align-items-center justify-content-center h-100 text-muted opacity-50">
+                        <i class="bi bi-image" style="font-size: 6rem;"></i>
+                        <p class="fw-bold mt-2">No High-Res Image Available</p>
                     </div>
                     {% endif %}
-                    <span
-                        class="position-absolute top-0 start-0 m-3 badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} fs-6 shadow px-3 py-2">
-                        <i
-                            class="bi bi-{{ 'exclamation-triangle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>{{
-                        item.type }}
-                    </span>
-                    {% if item.status == 'CLAIMED' %}
-                    <div class="position-absolute bottom-0 start-0 end-0 claimed-banner text-center py-2">
-                        <i class="bi bi-patch-check-fill me-1"></i> CLAIMED
+
+                    <div class="position-absolute top-0 start-0 p-4 w-100 d-flex justify-content-between">
+                        <span
+                            class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} px-3 py-2 fs-6 shadow-sm">
+                            <i
+                                class="bi bi-{{ 'exclamation-circle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>
+                            {{ item.type }}
+                        </span>
+                        {% if item.status == 'CLAIMED' %}
+                        <span class="badge claimed-badge px-3 py-2 fs-6">
+                            <i class="bi bi-patch-check-fill me-1"></i> RECOVERED
+                        </span>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
 
-                <!-- Details Column -->
-                <div class="col-md-7">
-                    <div class="card-body p-4 p-lg-5">
-                        <h1 class="h2 fw-bold text-dark mb-1">{{ item.title }}</h1>
-
-                        <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
-                            {% if item.status == 'CLAIMED' %}
-                            <span class="badge claimed-badge fs-6"><i
-                                    class="bi bi-patch-check-fill me-1"></i>CLAIMED</span>
-                            {% elif item.status == 'OPEN' %}
-                            <span class="badge bg-warning text-dark border fs-6">OPEN</span>
-                            {% else %}
-                            <span class="badge bg-secondary fs-6">{{ item.status }}</span>
-                            {% endif %}
-                            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ item.created_at.strftime('%B
-                                %d, %Y') }}</small>
+                <!-- Content Section -->
+                <div class="col-lg-6 h-100">
+                    <div class="card-body p-4 p-xl-5">
+                        <div class="mb-4">
+                            <h1 class="display-6 fw-bold mb-3">{{ item.title }}</h1>
+                            <div class="p-3 bg-light rounded-4 border-start border-primary border-4">
+                                <p class="text-secondary mb-0" style="line-height: 1.7;">{{ item.description }}</p>
+                            </div>
                         </div>
 
-                        <p class="lead text-secondary mb-4">{{ item.description }}</p>
-
-                        <!-- Verification Code — ONLY for LOST items, visible to owner -->
+                        <!-- Verification Area -->
                         {% if item.type == 'LOST' and item.verification_code %}
                         {% if current_user.is_authenticated and current_user.id == item.user_id %}
-                        <div class="verification-code-box mb-4">
-                            <p class="text-uppercase text-primary fw-bold mb-2"
-                                style="font-size: 0.7rem; letter-spacing: 2px;">
-                                <i class="bi bi-shield-lock me-1"></i>Your Verification Code
-                            </p>
-                            <div class="verification-code-text user-select-all"
-                                onclick="navigator.clipboard.writeText(this.innerText); this.classList.add('text-success'); setTimeout(()=>this.classList.remove('text-success'),1000);"
-                                title="Click to copy" style="cursor: pointer;">
+                        <div class="verification-code-box mb-5">
+                            <small class="text-uppercase fw-bold text-primary mb-3 d-block"
+                                style="letter-spacing: 0.1em;">
+                                <i class="bi bi-shield-check-fill me-1"></i> Private Ownership Code
+                            </small>
+                            <div class="verification-code-text user-select-all mb-3"
+                                onclick="navigator.clipboard.writeText(this.innerText); alert('Code copied!')"
+                                style="cursor: pointer;" title="Click to copy">
                                 {{ item.verification_code }}
                             </div>
-                            <small class="text-muted d-block mt-2">Share this code with the finder to verify your
-                                ownership.</small>
+                            <p class="small text-muted mb-0">Present this unique token to the finder to verify your
+                                belonging.</p>
                         </div>
                         {% else %}
-                        <div class="alert alert-info border-0 bg-info bg-opacity-10 rounded-3">
-                            <i class="bi bi-info-circle me-2"></i>This LOST item has a private verification code visible
-                            only to the owner.
+                        <div
+                            class="alert alert-light border border-info-subtle mb-5 p-3 rounded-4 d-flex align-items-center gap-3">
+                            <div class="stat-icon bg-info-subtle text-info"
+                                style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
+                            <div class="small">This item requires a secure verification code from the rightful owner.
+                            </div>
                         </div>
                         {% endif %}
                         {% endif %}
 
-                        <h6 class="fw-bold mb-3 text-uppercase text-muted"
-                            style="letter-spacing: 1px; font-size: 0.75rem;">Item Details</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <div class="detail-chip">
-                                    <i class="bi bi-tag-fill text-primary"></i>
-                                    <div>
-                                        <small class="text-muted">Category</small>
-                                        <span class="fw-medium d-block">{{ item.category.name if item.category else
-                                            'N/A' }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="detail-chip">
+                        <!-- Metadata Grid -->
+                        <div class="row g-3 mb-5">
+                            <div class="col-md-6">
+                                <div class="stat-widget py-2 px-3">
                                     <i class="bi bi-geo-alt-fill text-primary"></i>
                                     <div>
-                                        <small class="text-muted">Location</small>
-                                        <span class="fw-medium d-block">{{ item.location }}</span>
+                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Discovery
+                                            Site</small>
+                                        <span class="fw-bold">{{ item.location }}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="detail-chip">
-                                    <i class="bi bi-calendar-event-fill text-primary"></i>
+                            <div class="col-md-6">
+                                <div class="stat-widget py-2 px-3">
+                                    <i class="bi bi-tag-fill text-primary"></i>
                                     <div>
-                                        <small class="text-muted">Date</small>
-                                        <span class="fw-medium d-block">{{ item.date_occurred.strftime('%b %d, %Y')
+                                        <small class="text-muted d-block"
+                                            style="font-size: 0.7rem;">Classification</small>
+                                        <span class="fw-bold">{{ item.category.name if item.category else 'General'
                                             }}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="detail-chip">
-                                    <i class="bi bi-person-fill text-primary"></i>
+                            <div class="col-md-6">
+                                <div class="stat-widget py-2 px-3">
+                                    <i class="bi bi-phone-fill text-primary"></i>
                                     <div>
-                                        <small class="text-muted">Posted By</small>
-                                        <span class="fw-medium d-block">{{ item.user.username }}</span>
+                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Direct
+                                            Contact</small>
+                                        <span class="fw-bold">{{ item.contact_number }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stat-widget py-2 px-3">
+                                    <i class="bi bi-person-fill-check text-primary"></i>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Reporter</small>
+                                        <span class="fw-bold">{{ item.contact_name }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <!-- Action Buttons -->
-                        <div class="d-grid gap-2">
+                        <!-- Dynamic Actions -->
+                        <div class="d-grid gap-3 p-4 bg-light rounded-4">
                             {% if item.status == 'CLAIMED' %}
-                            <button class="btn btn-lg btn-outline-secondary" disabled>
-                                <i class="bi bi-patch-check-fill me-2"></i>This item has been returned
-                            </button>
-                            {% elif current_user.is_authenticated %}
-                            {% if current_user.id == item.user_id %}
-                            <!-- Owner/Finder Actions -->
-                            {% if item.type == 'FOUND' %}
-                            <a href="{{ url_for('claim_item', item_id=item.id) }}"
-                                class="btn btn-success btn-lg shadow-sm fw-bold">
-                                <i class="bi bi-shield-check me-2"></i>Verify Return
+                            <div class="text-center py-2 text-success fw-bold">
+                                <i class="bi bi-patch-check-fill me-2"></i> This case is successfully closed.
+                            </div>
+                            {% elif not current_user.is_authenticated %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg w-100">
+                                Login to Take Action <i class="bi bi-arrow-right ms-2"></i>
                             </a>
-                            <small class="text-center text-muted">Click here to verify the code provided by the
-                                claimant.</small>
+                            {% elif current_user.id == item.user_id %}
+                            {% if item.type == 'FOUND' %}
+                            <a href="{{ url_for('claim_item', item_id=item.id) }}" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-shield-lock-fill me-2"></i> Verify Item Return
+                            </a>
                             {% else %}
-                            <div class="alert alert-secondary mb-0 text-center">
-                                <i class="bi bi-person-check me-2"></i>This is your post
+                            <div class="text-center py-2 text-muted fw-bold small">
+                                <i class="bi bi-person-check-fill me-2"></i> You are managing this report.
                             </div>
                             {% endif %}
                             {% else %}
-                            <!-- Non-Owner Actions -->
+                            <!-- Public Interactions -->
                             {% if item.type == 'FOUND' %}
                             {% if matching_lost_items %}
-                            <!-- SCENARIO: User has a potential matching LOST item -->
-                            <div class="card border-success bg-success bg-opacity-10 mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title text-success fw-bold"><i class="bi bi-stars me-2"></i>Possbile
-                                        Match!</h5>
-                                    <p class="card-text small">You have reported a lost item in this category.</p>
-
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-success" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#verificationCodes">
-                                            View Verification Codes
-                                        </button>
-                                    </div>
-
-                                    <div class="collapse mt-3" id="verificationCodes">
-                                        {% for lost in matching_lost_items %}
-                                        {% if lost.user_id == current_user.id %}
-                                        <div class="bg-white p-3 rounded border mb-2">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span class="fw-bold text-dark">{{ lost.title }}</span>
-                                                <span class="badge bg-secondary">{{ lost.created_at.strftime('%b %d')
-                                                    }}</span>
-                                            </div>
-                                            <div class="verification-code-text text-center border rounded bg-light p-2 mb-2 user-select-all"
-                                                style="font-family: monospace; letter-spacing: 2px; font-weight: bold; color: var(--primary-color);">
-                                                {{ lost.verification_code }}
-                                            </div>
-                                            <small class="d-block text-muted text-center"
-                                                style="font-size: 0.75rem;">Give this code to the finder</small>
+                            <div class="bg-white p-3 rounded-4 border mb-2">
+                                <h6 class="fw-bold text-success mb-3"><i class="bi bi-magic me-2"></i>Smart Match Found!
+                                </h6>
+                                <p class="small text-muted">You've reported a similar lost item. Use your verification
+                                    code below to claim this item.</p>
+                                <div class="d-grid gap-2 mb-3">
+                                    <button class="btn btn-info btn-sm text-white" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#matchCodes">
+                                        Show Discovery Codes
+                                    </button>
+                                </div>
+                                <div class="collapse" id="matchCodes">
+                                    {% for lost in matching_lost_items %}
+                                    <div class="bg-light p-3 rounded-3 border mb-2 text-center">
+                                        <div class="small fw-bold mb-1">{{ lost.title }}</div>
+                                        <div class="h4 font-monospace text-primary mb-0">{{ lost.verification_code }}
                                         </div>
-                                        {% endif %}
-                                        {% endfor %}
                                     </div>
+                                    {% endfor %}
                                 </div>
                             </div>
-                            <a href="mailto:{{ item.user.email }}" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="bi bi-envelope-fill me-2"></i>Contact Finder
-                            </a>
                             {% else %}
-                            <!-- SCENARIO: User has NO matching LOST item -->
-                            <div class="card border-warning bg-warning bg-opacity-10 mb-3">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title text-dark fw-bold">Is this your item?</h5>
-                                    <p class="card-text small text-muted">To secure your claim, please report your lost
-                                        item first. This generates a secure verification code.</p>
-                                    <a href="{{ url_for('post_item', type='LOST', category=item.category_id) }}"
-                                        class="btn btn-warning text-dark fw-bold w-100">
-                                        <i class="bi bi-file-earmark-plus me-2"></i>Report My Lost Item
-                                    </a>
-                                </div>
+                            <div class="bg-warning-subtle p-3 rounded-4 border-warning border mb-2 text-center">
+                                <h6 class="fw-bold text-warning-emphasis mb-2">Is this your item?</h6>
+                                <p class="small text-muted mb-3">To secure your claim, report your lost item first to
+                                    generate a verification code.</p>
+                                <a href="{{ url_for('post_item', type='LOST', category=item.category_id) }}"
+                                    class="btn btn-warning btn-sm fw-bold w-100">
+                                    Report My Lost Item
+                                </a>
                             </div>
-                            <a href="mailto:{{ item.user.email }}" class="btn btn-outline-primary shadow-sm">
-                                <i class="bi bi-envelope me-2"></i>Contact Finder
-                            </a>
                             {% endif %}
+                            <a href="mailto:{{ item.user.email }}" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-envelope-at-fill me-2"></i> Send Message to Finder
+                            </a>
                             {% else %}
-                            <!-- Item is LOST, user is just browsing -->
-                            <a href="mailto:{{ item.user.email }}" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="bi bi-envelope-fill me-2"></i>Contact Owner
+                            <a href="mailto:{{ item.user.email }}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-envelope-at-fill me-2"></i> Contact Owner
                             </a>
-                            <a href="{{ url_for('report_item', item_id=item.id) }}" class="btn btn-outline-danger">
-                                <i class="bi bi-flag me-1"></i>Report
+                            <a href="{{ url_for('report_item', item_id=item.id) }}"
+                                class="btn btn-outline-danger border-0 small">
+                                <i class="bi bi-flag me-1"></i> Flag as inappropriate
                             </a>
                             {% endif %}
-                            {% endif %}
-                            {% else %}
-                            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Login to Interact
-                            </a>
                             {% endif %}
                         </div>
                     </div>
@@ -226,4 +205,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

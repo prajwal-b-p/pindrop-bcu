@@ -1,134 +1,139 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-            <div class="card-header bg-primary text-white py-4 px-5">
-                <h3 class="fw-bold mb-1"><i class="bi bi-pencil-square me-2"></i>Post a New Item</h3>
-                <p class="mb-0 text-white-50">Fill in the details below to help find or return an item.</p>
+<div class="row justify-content-center pt-4">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
+            <div class="card-header bg-dark text-white p-5 position-relative">
+                <div class="hero-gradient opacity-25"></div>
+                <div class="position-relative z-index-1">
+                    <span class="badge bg-primary mb-3 px-3 py-2" style="border-radius: 12px; font-size: 0.75rem;">
+                        <i class="bi bi-pencil-square me-1"></i> Community Report
+                    </span>
+                    <h2 class="display-6 fw-bold mb-2">Post a New Item</h2>
+                    <p class="text-light opacity-75 mb-0">Help reunite items with their owners by providing accurate
+                        details.</p>
+                </div>
             </div>
+
             <div class="card-body p-4 p-md-5">
                 <form method="POST" action="" enctype="multipart/form-data" id="postItemForm">
                     {{ form.hidden_tag() }}
 
-                    <div class="row g-3 mb-4">
+                    <!-- Type Selection -->
+                    <div class="row g-4 mb-5">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.type.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                                {% if form.type.errors %}
-                                {{ form.type(class="form-select is-invalid form-select-lg bg-light border-0",
-                                id="itemType") }}
-                                <div class="invalid-feedback">{% for e in form.type.errors %}<span>{{ e }}</span>{%
-                                    endfor %}</div>
-                                {% else %}
-                                {{ form.type(class="form-select form-select-lg bg-light border-0", id="itemType") }}
-                                {% endif %}
+                            <label class="form-label fw-bold text-secondary small text-uppercase"
+                                style="letter-spacing: 0.05em;">Type of Report</label>
+                            <div class="d-flex gap-3">
+                                {{ form.type(class="form-select form-select-lg", id="itemType") }}
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.category.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                                {% if form.category.errors %}
-                                {{ form.category(class="form-select is-invalid form-select-lg bg-light border-0") }}
-                                <div class="invalid-feedback">{% for e in form.category.errors %}<span>{{ e }}</span>{%
-                                    endfor %}</div>
-                                {% else %}
-                                {{ form.category(class="form-select form-select-lg bg-light border-0") }}
-                                {% endif %}
+                            <label class="form-label fw-bold text-secondary small text-uppercase"
+                                style="letter-spacing: 0.05em;">Category</label>
+                            {{ form.category(class="form-select form-select-lg") }}
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Intelligence Banner -->
+                    <div id="typeBanner" class="alert border-0 rounded-4 mb-5 p-4 fade show d-none"
+                        style="transition: var(--transition);">
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Item Title</label>
+                            {{ form.title(class="form-control form-control-lg", placeholder="e.g. Silver MacBook Air
+                            13-inch") }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Detailed
+                                Description</label>
+                            {{ form.description(class="form-control form-control-lg", rows="4", placeholder="Include
+                            unique identifiers, marks, or specific location details...") }}
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Specific
+                                Location</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 rounded-start-pill px-3"><i
+                                        class="bi bi-geo-alt text-primary"></i></span>
+                                {{ form.location(class="form-control form-control-lg border-start-0 rounded-end-pill
+                                px-3", placeholder="e.g. Science Lab 302") }}
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Info banner that changes based on type -->
-                    <div id="typeBanner" class="alert border-0 rounded-3 mb-4 d-none">
-                    </div>
-
-                    <div class="form-group mb-4">
-                        {{ form.title.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                        {% if form.title.errors %}
-                        {{ form.title(class="form-control is-invalid form-control-lg") }}
-                        <div class="invalid-feedback">{% for e in form.title.errors %}<span>{{ e }}</span>{% endfor %}
-                        </div>
-                        {% else %}
-                        {{ form.title(class="form-control form-control-lg bg-light border-0", placeholder="e.g. Blue
-                        Jansport Backpack") }}
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group mb-4">
-                        {{ form.description.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                        {% if form.description.errors %}
-                        {{ form.description(class="form-control is-invalid form-control-lg", rows="4") }}
-                        <div class="invalid-feedback">{% for e in form.description.errors %}<span>{{ e }}</span>{%
-                            endfor %}</div>
-                        {% else %}
-                        {{ form.description(class="form-control form-control-lg bg-light border-0", rows="4",
-                        placeholder="Provide as much detail as possible...") }}
-                        {% endif %}
-                    </div>
-
-                    <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            {{ form.location.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                            {% if form.location.errors %}
-                            {{ form.location(class="form-control is-invalid form-control-lg") }}
-                            <div class="invalid-feedback">{% for e in form.location.errors %}<span>{{ e }}</span>{%
-                                endfor %}</div>
-                            {% else %}
-                            {{ form.location(class="form-control form-control-lg bg-light border-0", placeholder="e.g.
-                            Student Center") }}
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form.date_occurred.label(class="form-label fw-bold small text-uppercase text-muted") }}
-                            {% if form.date_occurred.errors %}
-                            {{ form.date_occurred(class="form-control is-invalid form-control-lg") }}
-                            <div class="invalid-feedback">{% for e in form.date_occurred.errors %}<span>{{ e }}</span>{%
-                                endfor %}</div>
-                            {% else %}
-                            {{ form.date_occurred(class="form-control form-control-lg bg-light border-0", type="date")
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Date Occurred</label>
+                            {{ form.date_occurred(class="form-control form-control-lg rounded-pill px-4", type="date")
                             }}
-                            {% endif %}
                         </div>
                     </div>
 
-                    <!-- Image Upload Section with Camera -->
-                    <div class="form-group mb-5">
-                        <label class="form-label fw-bold small text-uppercase text-muted">Upload Image</label>
-                        <div class="upload-area rounded-4 p-4 text-center position-relative">
-                            <!-- Preview -->
-                            <div id="imagePreviewContainer" class="d-none mb-3">
-                                <img id="imagePreview" class="rounded-3 shadow-sm"
-                                    style="max-height: 250px; max-width: 100%; object-fit: contain;" alt="Preview">
-                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearImage()">
-                                    <i class="bi bi-trash me-1"></i>Remove
-                                </button>
-                            </div>
+                    <hr class="my-5 opacity-10">
 
-                            <!-- Upload Options -->
-                            <div id="uploadOptions">
-                                <i class="bi bi-cloud-arrow-up"
-                                    style="font-size: 3rem; color: var(--primary-color); opacity: 0.5;"></i>
-                                <p class="text-muted mt-2 mb-3">Upload a photo or take one with your camera</p>
-                                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                    <label class="btn btn-outline-primary px-4" for="fileInput">
+                    <!-- Contact Details -->
+                    <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge-fill text-primary"></i> Contact Information
+                    </h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Your Name</label>
+                            {{ form.contact_name(class="form-control form-control-lg", placeholder="Enter your full
+                            name") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Phone Number</label>
+                            {{ form.contact_number(class="form-control form-control-lg", placeholder="e.g. +1 (555)
+                            000-0000") }}
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Upload Area -->
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-secondary small text-uppercase mb-3">Visualization
+                            (Required)</label>
+                        <div id="dropZone" class="upload-area p-5 text-center border-2 dashed rounded-4"
+                            style="background: #f8fafc; border: 2px dashed #cbd5e1; cursor: pointer; transition: var(--transition);">
+
+                            <div id="uploadPlaceholder">
+                                <div class="stat-icon bg-white text-primary shadow-sm mx-auto mb-3"
+                                    style="width: 80px; height: 80px; font-size: 2rem;">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2">Upload or Capture Photo</h5>
+                                <p class="text-muted small mb-4">A high-quality image is essential for verification.</p>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <label for="fileInput" class="btn btn-primary px-4">
                                         <i class="bi bi-folder2-open me-2"></i>Choose File
                                     </label>
-                                    <button type="button" class="btn btn-outline-success px-4" onclick="openCamera()">
-                                        <i class="bi bi-camera-fill me-2"></i>Open Camera
+                                    <button type="button" class="btn btn-light px-4 border" onclick="openCamera()">
+                                        <i class="bi bi-camera-fill me-2"></i>Take Photo
                                     </button>
                                 </div>
                                 {{ form.image(class="d-none", id="fileInput", onchange="previewFile(event)") }}
                             </div>
+
+                            <div id="imagePreviewContainer" class="d-none">
+                                <img id="imagePreview" class="rounded-4 shadow-standard mb-3"
+                                    style="max-height: 300px; width: auto; max-width: 100%; object-fit: contain;">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-danger btn-sm px-3 rounded-pill"
+                                        onclick="clearImage()">
+                                        <i class="bi bi-trash me-1"></i>Remove & Retry
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <small class="form-text text-muted">JPG, PNG — max 5MB.</small>
                     </div>
 
-                    <!-- Hidden field for camera data -->
                     <input type="hidden" name="camera_image" id="cameraImageData">
 
-                    <div class="d-grid gap-2">
-                        {{ form.submit(class="btn btn-primary btn-lg fw-bold shadow-sm py-3") }}
+                    <div class="d-grid pt-3">
+                        {{ form.submit(class="btn btn-primary btn-lg py-3 fw-bold shadow-premium", value="Launch Report
+                        to Community") }}
                     </div>
                 </form>
             </div>
@@ -136,24 +141,25 @@
     </div>
 </div>
 
-<!-- Camera Modal -->
+<!-- Premium Camera Modal -->
 <div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
-            <div class="modal-header bg-dark text-white border-0">
-                <h5 class="modal-title"><i class="bi bi-camera-video me-2"></i>Camera Capture</h5>
+        <div class="modal-content border-0 shadow-hover" style="border-radius: 20px; background: #000;">
+            <div class="modal-header border-0 p-4 position-absolute top-0 start-0 w-100 z-index-1"
+                style="background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);">
+                <h5 class="modal-title text-white fw-bold"><i class="bi bi-camera-video me-2"></i>Live Capture</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     onclick="stopCamera()"></button>
             </div>
-            <div class="modal-body bg-dark p-0 text-center position-relative">
-                <video id="cameraFeed" autoplay playsinline
-                    style="width: 100%; max-height: 60vh; object-fit: cover;"></video>
+            <div class="modal-body p-0 position-relative overflow-hidden" style="min-height: 400px;">
+                <video id="cameraFeed" autoplay playsinline class="w-100 h-100" style="object-fit: cover;"></video>
                 <canvas id="cameraCanvas" class="d-none"></canvas>
             </div>
-            <div class="modal-footer bg-dark border-0 justify-content-center py-3">
-                <button type="button" class="btn btn-light btn-lg rounded-circle shadow"
-                    style="width: 70px; height: 70px;" onclick="capturePhoto()">
-                    <i class="bi bi-camera-fill fs-4 text-dark"></i>
+            <div class="modal-footer border-0 justify-content-center p-4 bg-dark">
+                <button type="button"
+                    class="btn btn-light btn-lg rounded-circle d-flex align-items-center justify-content-center shadow-lg"
+                    style="width: 80px; height: 80px;" onclick="capturePhoto()">
+                    <i class="bi bi-camera-fill fs-2"></i>
                 </button>
             </div>
         </div>
@@ -163,29 +169,50 @@
 <script>
     let cameraStream = null;
 
-    // Type-based info banner
+    // Type Intelligence
     document.getElementById('itemType').addEventListener('change', function () {
         const banner = document.getElementById('typeBanner');
         banner.classList.remove('d-none');
         if (this.value === 'LOST') {
-            banner.className = 'alert border-0 rounded-3 mb-4 bg-danger bg-opacity-10 text-danger';
-            banner.innerHTML = '<i class="bi bi-info-circle me-2"></i><strong>Lost Item:</strong> A unique verification code will be generated for you. Keep it safe to verify ownership later!';
+            banner.style.background = 'rgba(239, 68, 68, 0.05)';
+            banner.style.borderLeft = '6px solid var(--danger)';
+            banner.innerHTML = `
+                <div class="d-flex align-items-start gap-3">
+                    <div class="stat-icon bg-danger-subtle text-danger" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-danger mb-1">Secure Discovery Flow</h6>
+                        <p class="text-secondary small mb-0">We will generate a unique <strong>Ownership Token</strong> for this item. Only share this with the person who finds your item to verify your belonging.</p>
+                    </div>
+                </div>
+            `;
         } else {
-            banner.className = 'alert border-0 rounded-3 mb-4 bg-success bg-opacity-10 text-success';
-            banner.innerHTML = '<i class="bi bi-info-circle me-2"></i><strong>Found Item:</strong> Once posted, others can claim this by providing their LOST verification code.';
+            banner.style.background = 'rgba(16, 185, 129, 0.05)';
+            banner.style.borderLeft = '6px solid var(--success)';
+            banner.innerHTML = `
+                <div class="d-flex align-items-start gap-3">
+                    <div class="stat-icon bg-success-subtle text-success" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-success mb-1">Safe Return Protocol</h6>
+                        <p class="text-secondary small mb-0">Once posted, users can claim this by providing their unique discovery code. You will be able to verify this code through your dashboard.</p>
+                    </div>
+                </div>
+            `;
         }
     });
-    // Trigger on page load
     document.getElementById('itemType').dispatchEvent(new Event('change'));
 
-    // File preview
+    // Image Handlers
     function previewFile(event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function (e) {
             showPreview(e.target.result);
-            document.getElementById('cameraImageData').value = ''; // clear camera data
+            document.getElementById('cameraImageData').value = '';
         };
         reader.readAsDataURL(file);
     }
@@ -193,28 +220,31 @@
     function showPreview(src) {
         document.getElementById('imagePreview').src = src;
         document.getElementById('imagePreviewContainer').classList.remove('d-none');
-        document.getElementById('uploadOptions').classList.add('d-none');
+        document.getElementById('uploadPlaceholder').classList.add('d-none');
+        document.getElementById('dropZone').style.borderStyle = 'solid';
+        document.getElementById('dropZone').style.borderColor = 'var(--brand-primary)';
     }
 
     function clearImage() {
         document.getElementById('imagePreview').src = '';
         document.getElementById('imagePreviewContainer').classList.add('d-none');
-        document.getElementById('uploadOptions').classList.remove('d-none');
+        document.getElementById('uploadPlaceholder').classList.remove('d-none');
+        document.getElementById('dropZone').style.borderStyle = 'dashed';
+        document.getElementById('dropZone').style.borderColor = '#cbd5e1';
         document.getElementById('fileInput').value = '';
         document.getElementById('cameraImageData').value = '';
     }
 
-    // Camera
+    // Camera Engine
     function openCamera() {
         const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
         modal.show();
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
             .then(stream => {
                 cameraStream = stream;
                 document.getElementById('cameraFeed').srcObject = stream;
-            })
-            .catch(err => {
-                alert('Could not access camera: ' + err.message);
+            }).catch(err => {
+                alert('Camera Access Denied: ' + err.message);
                 modal.hide();
             });
     }
@@ -225,8 +255,7 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 0, 0);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         document.getElementById('cameraImageData').value = dataUrl;
         showPreview(dataUrl);
         stopCamera();
@@ -239,19 +268,15 @@
             cameraStream = null;
         }
     }
-    // Form Validation
-    document.getElementById('postItemForm').addEventListener('submit', function (e) {
-        const fileInput = document.getElementById('fileInput');
-        const cameraInput = document.getElementById('cameraImageData');
 
-        if (!fileInput.files.length && !cameraInput.value) {
+    // Validation
+    document.getElementById('postItemForm').addEventListener('submit', function (e) {
+        if (!document.getElementById('fileInput').files.length && !document.getElementById('cameraImageData').value) {
             e.preventDefault();
-            alert('Please upload an image or take a photo to post an item.');
-            // Highlight the upload area
-            document.querySelector('.upload-area').style.border = '2px solid var(--bs-danger)';
-            document.querySelector('.upload-area').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            alert('A visualization (photo) is mandatory for post quality.');
+            document.getElementById('dropZone').style.borderColor = 'var(--danger)';
+            document.getElementById('dropZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     });
-
 </script>
 {% endblock %}

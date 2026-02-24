@@ -1,116 +1,112 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-4 pt-4">
     <div>
-        <h1 class="h2 fw-bold mb-1"><i class="bi bi-speedometer2 me-2 text-primary"></i>My Dashboard</h1>
-        <p class="text-muted mb-0">Manage your posted items and track claims.</p>
+        <h1 class="fw-bold mb-2">My Control Center</h1>
+        <p class="text-muted mb-0">Track your reports, manage matches, and see your impact.</p>
     </div>
-    <a href="{{ url_for('post_item') }}" class="btn btn-primary shadow-sm px-4">
-        <i class="bi bi-plus-lg me-2"></i>Post New Item
+    <a href="{{ url_for('post_item') }}" class="btn btn-primary px-4 py-3 shadow-premium">
+        <i class="bi bi-plus-lg me-2"></i>Create New Report
     </a>
 </div>
 
-<!-- Stats Row -->
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-            <div class="card-body d-flex align-items-center gap-3">
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-box-seam-fill"></i></div>
-                <div>
-                    <h3 class="fw-bold mb-0">{{ items|length }}</h3>
-                    <small class="text-muted">Total Items</small>
-                </div>
+<!-- Stats Dashboard -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-widget">
+            <div class="stat-icon bg-primary text-white shadow-sm" style="background: var(--brand-primary) !important;">
+                <i class="bi bi-layers-half"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">{{ items|length }}</h3>
+                <p class="text-muted small mb-0">Active Reports</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-            <div class="card-body d-flex align-items-center gap-3">
-                <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i
-                        class="bi bi-exclamation-triangle-fill"></i></div>
-                <div>
-                    <h3 class="fw-bold mb-0">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h3>
-                    <small class="text-muted">Lost Reports</small>
-                </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="stat-widget">
+            <div class="stat-icon bg-danger text-white shadow-sm" style="background: var(--danger) !important;">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h3>
+                <p class="text-muted small mb-0">Lost Items</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-            <div class="card-body d-flex align-items-center gap-3">
-                <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle-fill"></i>
-                </div>
-                <div>
-                    <h3 class="fw-bold mb-0">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h3>
-                    <small class="text-muted">Claimed</small>
-                </div>
+    <div class="col-lg-4 col-md-12">
+        <div class="stat-widget">
+            <div class="stat-icon bg-success text-white shadow-sm"
+                style="background: var(--brand-secondary) !important;">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h3>
+                <p class="text-muted small mb-0">Successfully Returned</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Items Grid -->
+<!-- Items Section -->
 <div class="row g-4">
     {% for item in items %}
-    <div class="col-md-6 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100 position-relative overflow-hidden item-card-hover">
-            <!-- Status ribbon -->
-            {% if item.status == 'CLAIMED' %}
-            <div class="position-absolute top-0 end-0 m-3 z-1">
-                <span class="badge claimed-badge shadow-sm"><i class="bi bi-patch-check-fill me-1"></i>CLAIMED</span>
-            </div>
-            {% endif %}
-
-            {% if item.image_file %}
-            <div style="height: 180px; overflow: hidden;">
-                <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100"
-                    style="object-fit: cover;" alt="{{ item.title }}">
-            </div>
-            {% else %}
-            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                <i class="bi bi-image text-muted" style="font-size: 3rem; opacity: 0.2;"></i>
-            </div>
-            {% endif %}
-
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title fw-bold text-truncate mb-0" style="max-width: 70%;">{{ item.title }}</h5>
-                    <span class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }}">{{ item.type }}</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card item-card-hover">
+            <div class="card-img-container">
+                <div class="position-absolute top-0 start-0 p-3 z-index-1 d-flex flex-column gap-2">
+                    <span class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} shadow-sm">
+                        <i class="bi bi-{{ 'exclamation-circle' if item.type == 'LOST' else 'check-circle' }} me-1"></i>
+                        {{ item.type }}
+                    </span>
+                    {% if item.status == 'CLAIMED' %}
+                    <span class="badge claimed-badge"><i class="bi bi-patch-check-fill me-1"></i> RETURNED</span>
+                    {% endif %}
                 </div>
-
-                <div class="d-flex align-items-center gap-2 text-muted small mb-3">
-                    <span><i class="bi bi-geo-alt me-1"></i>{{ item.location }}</span>
-                    <span>·</span>
-                    <span><i class="bi bi-calendar me-1"></i>{{ item.created_at.strftime('%b %d') }}</span>
-                </div>
-
-                <!-- Verification Code for LOST items only - STRICT SECURITY CHECK -->
-                {% if item.type == 'LOST' and item.verification_code and item.user_id == current_user.id %}
-                <div class="verification-code-box-sm mb-3">
-                    <small class="text-uppercase fw-bold text-primary d-block"
-                        style="font-size: 0.65rem; letter-spacing: 1px;">
-                        <i class="bi bi-shield-lock me-1"></i>Verification Code
-                    </small>
-                    <span class="fw-bold font-monospace text-primary" style="letter-spacing: 2px;">{{
-                        item.verification_code }}</span>
+                {% if item.image_file %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" alt="{{ item.title }}">
+                {% else %}
+                <div
+                    class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted opacity-50">
+                    <i class="bi bi-image" style="font-size: 3rem;"></i>
                 </div>
                 {% endif %}
             </div>
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-truncate">{{ item.title }}</h5>
 
-            <div class="card-footer bg-transparent border-0 pb-3 px-3">
-                <a href="{{ url_for('item_detail', item_id=item.id) }}"
-                    class="btn btn-outline-primary w-100 fw-bold rounded-3">
-                    View Details <i class="bi bi-arrow-right ms-1"></i>
+                <div class="d-flex align-items-center gap-3 text-muted small mb-4">
+                    <span><i class="bi bi-geo-alt-fill me-1 text-primary"></i> {{ item.location }}</span>
+                    <span><i class="bi bi-calendar3 me-1"></i> {{ item.created_at.strftime('%b %d') }}</span>
+                </div>
+
+                {% if item.type == 'LOST' and item.verification_code and item.user_id == current_user.id and item.status
+                == 'OPEN' %}
+                <div class="verification-code-box mb-4 py-3 px-2"
+                    style="background: #f8fafc; border: 1px dashed var(--brand-primary); border-radius: 12px;">
+                    <small class="text-uppercase fw-bold text-primary mb-2 d-block"
+                        style="font-size: 0.6rem; letter-spacing: 0.1em;">
+                        <i class="bi bi-shield-lock-fill me-1"></i> Ownership Token
+                    </small>
+                    <div class="h3 font-monospace fw-bold mb-0 text-primary" style="letter-spacing: 0.2em;">{{
+                        item.verification_code }}</div>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-light w-100 mt-2">
+                    Manage Report <i class="bi bi-sliders2 ms-2"></i>
                 </a>
             </div>
         </div>
     </div>
     {% else %}
-    <div class="col-12 text-center py-5">
-        <div class="text-muted mb-3"><i class="bi bi-inbox" style="font-size: 4rem; opacity: 0.3;"></i></div>
-        <h4 class="fw-light text-muted">You haven't posted any items yet.</h4>
-        <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3 px-4">Post Your First Item</a>
+    <div class="col-12 py-5 text-center text-muted">
+        <div class="opacity-25 mb-4"><i class="bi bi-folder2-open" style="font-size: 5rem;"></i></div>
+        <h3>No active reports found</h3>
+        <p>You haven't posted any items yet. Start helping your community today.</p>
+        <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3 px-5">Post Your First Item</a>
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

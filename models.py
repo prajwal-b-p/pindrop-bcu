@@ -29,6 +29,8 @@ class Item(db.Model):
     location = db.Column(db.String(200), nullable=False)
     date_occurred = db.Column(db.Date, nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
+    contact_name = db.Column(db.String(150), nullable=False)
+    contact_number = db.Column(db.String(20), nullable=False)
     verification_code = db.Column(db.String(10), unique=True, nullable=True, default=None)
     status = db.Column(db.String(20), default='OPEN') # OPEN, CLAIMED, RESOLVED
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

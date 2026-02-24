@@ -154,7 +154,8 @@ def post_item():
 
         item = Item(title=form.title.data, type=form.type.data, description=form.description.data,
                     location=form.location.data, date_occurred=form.date_occurred.data,
-                    user_id=current_user.id, category_id=form.category.data, image_file=pic_file)
+                    user_id=current_user.id, category_id=form.category.data, image_file=pic_file,
+                    contact_name=form.contact_name.data, contact_number=form.contact_number.data)
         
         # Generate verification code ONLY for LOST items
         if form.type.data == 'LOST':

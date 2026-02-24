@@ -1,51 +1,63 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5 col-lg-4">
-        <div class="card shadow-lg border-0 rounded-3">
-            <div class="card-header bg-white border-0 text-center py-4">
-                <h3 class="fw-bold mb-0 text-primary">Welcome Back</h3>
-                <small class="text-muted">Sign in to your account</small>
+<div class="row justify-content-center pt-5">
+    <div class="col-md-6 col-lg-5 col-xl-4 py-4">
+        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
+            <div class="card-header bg-dark text-white text-center py-5 position-relative">
+                <div class="hero-gradient opacity-25"></div>
+                <div class="position-relative z-index-1">
+                    <div class="stat-icon bg-primary bg-opacity-25 mx-auto mb-3"
+                        style="width: 64px; height: 64px; border: 2px solid rgba(255,255,255,0.1);">
+                        <i class="bi bi-shield-lock-fill fs-3 text-white"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Welcome Back</h3>
+                    <p class="small text-light opacity-75 mb-0">Securely sign in to your account</p>
+                </div>
             </div>
             <div class="card-body p-4 p-md-5">
                 <form method="POST" action="">
                     {{ form.hidden_tag() }}
-                    <div class="form-group mb-3">
-                        {{ form.username.label(class="form-label fw-bold small text-uppercase text-muted") }}
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold text-secondary small text-uppercase"
+                            style="letter-spacing: 0.1em;">Username</label>
                         {% if form.username.errors %}
-                        {{ form.username(class="form-control is-invalid form-control-lg") }}
+                        {{ form.username(class="form-control form-control-lg is-invalid", placeholder="Your user
+                        handle") }}
                         <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
-                            <span>{{ error }}</span>
-                            {% endfor %}
+                            {% for error in form.username.errors %}<span>{{ error }}</span>{% endfor %}
                         </div>
                         {% else %}
-                        {{ form.username(class="form-control form-control-lg bg-light border-0") }}
+                        {{ form.username(class="form-control form-control-lg bg-light border-0", placeholder="Your user
+                        handle") }}
                         {% endif %}
                     </div>
-                    <div class="form-group mb-4">
-                        {{ form.password.label(class="form-label fw-bold small text-uppercase text-muted") }}
+                    <div class="form-group mb-5">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-secondary small text-uppercase"
+                                style="letter-spacing: 0.1em;">Security Key</label>
+                        </div>
                         {% if form.password.errors %}
-                        {{ form.password(class="form-control is-invalid form-control-lg") }}
+                        {{ form.password(class="form-control form-control-lg is-invalid", placeholder="••••••••") }}
                         <div class="invalid-feedback">
-                            {% for error in form.password.errors %}
-                            <span>{{ error }}</span>
-                            {% endfor %}
+                            {% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}
                         </div>
                         {% else %}
-                        {{ form.password(class="form-control form-control-lg bg-light border-0") }}
+                        {{ form.password(class="form-control form-control-lg bg-light border-0", placeholder="••••••••")
+                        }}
                         {% endif %}
                     </div>
                     <div class="d-grid gap-2">
-                        {{ form.submit(class="btn btn-primary btn-lg fw-bold shadow-sm") }}
+                        {{ form.submit(class="btn btn-primary btn-lg fw-bold shadow-premium py-3", value="Verify & Sign
+                        In") }}
                     </div>
                 </form>
             </div>
-            <div class="card-footer bg-light border-0 text-center py-3">
-                <small class="text-muted">Don't have an account? <a href="{{ url_for('register') }}"
-                        class="text-primary fw-bold text-decoration-none">Sign Up</a></small>
+            <div class="card-footer bg-light border-0 text-center py-4">
+                <p class="mb-0 small text-muted">New to the community? <a href="{{ url_for('register') }}"
+                        class="text-primary fw-bold text-decoration-none ms-1">Join now</a></p>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

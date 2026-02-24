@@ -23,6 +23,8 @@ class ItemForm(FlaskForm):
     location = StringField('Location', validators=[DataRequired()])
     date_occurred = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    contact_name = StringField('Your Name', validators=[DataRequired(), Length(max=150)])
+    contact_number = StringField('Contact Number', validators=[DataRequired(), Length(min=10, max=20)])
     submit = SubmitField('Post Item')
 
 class ReportForm(FlaskForm):

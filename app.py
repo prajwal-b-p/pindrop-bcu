@@ -14,7 +14,7 @@ from forms import RegistrationForm, LoginForm, ItemForm, ReportForm, ClaimForm
 
 app = Flask(__name__)
 # Git sync check
-app.config['SECRET_KEY'] = 'your_secret_key_here' # Keep this safe!
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-dev-key-123') 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///site_v3.db')
 # Fix for Render's postgres database URL (starts with postgres:// but SQLAlchemy needs postgresql://)
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):

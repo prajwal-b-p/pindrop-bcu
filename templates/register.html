@@ -1,88 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center pt-5">
-    <div class="col-md-7 col-lg-6 col-xl-5 py-4">
-        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
-            <div class="card-header bg-dark text-white text-center py-5 position-relative">
-                <div class="hero-gradient opacity-25"></div>
-                <div class="position-relative z-index-1">
-                    <div class="stat-icon bg-primary bg-opacity-25 mx-auto mb-3"
-                        style="width: 64px; height: 64px; border: 2px solid rgba(255,255,255,0.1);">
-                        <i class="bi bi-person-plus-fill fs-3 text-white"></i>
-                    </div>
-                    <h3 class="fw-bold mb-1">Create Account</h3>
-                    <p class="small text-light opacity-75 mb-0">Join our community of helpful citizens</p>
+<div class="row justify-content-center align-items-center min-vh-75 py-5 fade-in-up">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="mb-5 text-center">
+            <i class="bi bi-fingerprint text-emerald opacity-75 mb-3 d-block" style="font-size: 3rem;"></i>
+            <h2 class="display-6 fw-200 text-white text-uppercase mb-2">INITIALIZE NODE</h2>
+            <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">GENERATE NEW SYSTEM IDENTITY.</p>
+        </div>
+
+        <div class="card card-elite bg-surface p-4 p-md-5">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    {{ form.username.label(class="form-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control is-invalid border-danger", placeholder="Choose an identifier", autofocus=True) }}
+                        <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {% for error in form.username.errors %}
+                                <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control", placeholder="Choose an identifier", autofocus=True) }}
+                    {% endif %}
                 </div>
-            </div>
-            <div class="card-body p-4 p-md-5">
-                <form method="POST" action="">
-                    {{ form.hidden_tag() }}
-                    <div class="form-group mb-4">
-                        <label class="form-label fw-bold text-secondary small text-uppercase"
-                            style="letter-spacing: 0.1em;">Username</label>
-                        {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid", placeholder="Choose a handle")
-                        }}
-                        <div class="invalid-feedback">{% for error in form.username.errors %}<span>{{ error }}</span>{%
-                            endfor %}</div>
-                        {% else %}
-                        {{ form.username(class="form-control form-control-lg bg-light border-0", placeholder="Choose a
-                        handle") }}
-                        {% endif %}
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="form-label fw-bold text-secondary small text-uppercase"
-                            style="letter-spacing: 0.1em;">Email Address</label>
-                        {% if form.email.errors %}
-                        {{ form.email(class="form-control form-control-lg is-invalid", placeholder="you@example.com") }}
-                        <div class="invalid-feedback">{% for error in form.email.errors %}<span>{{ error }}</span>{%
-                            endfor %}</div>
-                        {% else %}
-                        {{ form.email(class="form-control form-control-lg bg-light border-0",
-                        placeholder="you@example.com") }}
-                        {% endif %}
-                    </div>
-                    <div class="row g-3 mb-5">
-                        <div class="col-sm-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase"
-                                style="letter-spacing: 0.1em;">Security Key</label>
-                            {% if form.password.errors %}
-                            {{ form.password(class="form-control form-control-lg is-invalid", placeholder="••••••••") }}
-                            {% else %}
-                            {{ form.password(class="form-control form-control-lg bg-light border-0",
-                            placeholder="••••••••") }}
-                            {% endif %}
+
+                <div class="mb-4">
+                    {{ form.email.label(class="form-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control is-invalid border-danger", placeholder="secure@domain.com") }}
+                        <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {% for error in form.email.errors %}
+                                <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
+                            {% endfor %}
                         </div>
-                        <div class="col-sm-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase"
-                                style="letter-spacing: 0.1em;">Confirm Key</label>
-                            {% if form.confirm_password.errors %}
-                            {{ form.confirm_password(class="form-control form-control-lg is-invalid",
-                            placeholder="••••••••") }}
-                            {% else %}
-                            {{ form.confirm_password(class="form-control form-control-lg bg-light border-0",
-                            placeholder="••••••••") }}
-                            {% endif %}
+                    {% else %}
+                        {{ form.email(class="form-control", placeholder="secure@domain.com") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.password.label(class="form-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control is-invalid border-danger", placeholder="••••••••") }}
+                        <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {% for error in form.password.errors %}
+                                <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
+                            {% endfor %}
                         </div>
-                        <div class="col-12 mt-1">
-                            {% for error in form.password.errors %}<div class="text-danger small">{{ error }}</div>{%
-                            endfor %}
-                            {% for error in form.confirm_password.errors %}<div class="text-danger small">{{ error }}
-                            </div>{% endfor %}
+                    {% else %}
+                        {{ form.password(class="form-control", placeholder="••••••••") }}
+                    {% endif %}
+                </div>
+                
+                <div class="mb-5">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control is-invalid border-danger", placeholder="••••••••") }}
+                        <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {% for error in form.confirm_password.errors %}
+                                <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="d-grid gap-2 pt-2">
-                        {{ form.submit(class="btn btn-primary btn-lg fw-bold shadow-premium py-3", value="Initialize
-                        Account") }}
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer bg-light border-0 text-center py-4">
-                <p class="mb-0 small text-muted">Already a member? <a href="{{ url_for('login') }}"
-                        class="text-primary fw-bold text-decoration-none ms-1">Sign in here</a></p>
+                    {% else %}
+                        {{ form.confirm_password(class="form-control", placeholder="••••••••") }}
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.role.label(class="form-label text-emerald fw-500") }}
+                    {{ form.role(class="form-select bg-dark text-white border-hairline") }}
+                </div>
+                
+                <!-- Department removed as per user clarification -->
+
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-emerald-solid py-3 fs-6", value="GENERATE CLEARANCE") }}
+                </div>
+            </form>
+            
+            <div class="mt-5 text-center border-hairline-top pt-4">
+                <small class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em;">ALREADY POSSESS CLEARANCE?</small><br>
+                <a href="{{ url_for('login') }}" class="text-emerald text-decoration-none fw-500 text-uppercase mt-2 d-inline-block" style="letter-spacing: 0.1em; font-size: 0.75rem;">
+                    AUTHENTICATE NOW <i class="bi bi-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

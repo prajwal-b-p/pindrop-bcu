@@ -10,6 +10,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+    role = db.Column(db.String(20), default='STUDENT')
+    department = db.Column(db.String(100), nullable=True)
     # Relationships
     items = db.relationship('Item', backref='user', lazy=True)
     reports = db.relationship('Report', backref='reporter', lazy=True)
@@ -27,12 +29,16 @@ class Item(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     location = db.Column(db.String(200), nullable=False)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
     date_occurred = db.Column(db.Date, nullable=False)
-    image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
+    image_file = db.Column(db.String(255), nullable=True, default='default.jpg')
     contact_name = db.Column(db.String(150), nullable=False)
     contact_number = db.Column(db.String(20), nullable=False)
     verification_code = db.Column(db.String(10), unique=True, nullable=True, default=None)
     status = db.Column(db.String(20), default='OPEN') # OPEN, CLAIMED, RESOLVED
+    is_high_value = db.Column(db.Boolean, default=False)
+    assigned_department = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Foreign Keys

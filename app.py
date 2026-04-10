@@ -10,7 +10,7 @@ import string
 
 # Import our models and forms
 from models import db, User, Item, Category, Match, Report
-from forms import RegistrationForm, LoginForm, ItemForm, ReportForm, ClaimForm
+from forms import RegistrationForm, LoginForm, ItemForm, ReportForm, ClaimForm, HODPasswordChangeForm
 
 app = Flask(__name__)
 # Git sync check
@@ -106,7 +106,8 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_pw = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
+        role = form.role.data if form.role.data else 'STUDENT'
+        user = User(username=form.username.data, email=form.email.data, password=hashed_pw, role=role, department=None)
         db.session.add(user)
         db.session.commit()
         flash('Account created! You can now login.', 'success')
@@ -121,11 +122,33 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
+            if user.role == 'HOD':
+                flash('HOD accounts must log in via the dedicated HOD Portal.', 'warning')
+                return redirect(url_for('hod_login'))
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+@app.route("/hod_login", methods=['GET', 'POST'])
+def hod_login():
+    if current_user.is_authenticated:
+        if current_user.role == 'HOD':
+            return redirect(url_for('hod_dashboard'))
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            if user.role != 'HOD':
+                flash('This portal is strictly for HODs. Please use standard login.', 'danger')
+                return redirect(url_for('login'))
+            login_user(user)
+            return redirect(url_for('hod_dashboard'))
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    return render_template('hod_login.html', title='HOD Login', form=form)
 
 @app.route("/logout")
 def logout():
@@ -163,10 +186,21 @@ def post_item():
         else:
             pic_file = save_picture(form.image.data)
 
+        # Parse spatial data
+        lat = request.form.get('latitude')
+        lng = request.form.get('longitude')
+        try:
+            lat = float(lat)
+            lng = float(lng)
+        except (TypeError, ValueError):
+            lat = None
+            lng = None
+
         item = Item(title=form.title.data, type=form.type.data, description=form.description.data,
-                    location=form.location.data, date_occurred=form.date_occurred.data,
+                    location=form.location.data, latitude=lat, longitude=lng, date_occurred=form.date_occurred.data,
                     user_id=current_user.id, category_id=form.category.data, image_file=pic_file,
-                    contact_name=form.contact_name.data, contact_number=form.contact_number.data)
+                    contact_name=form.contact_name.data, contact_number=form.contact_number.data,
+                    is_high_value=form.is_high_value.data, assigned_department=form.assigned_department.data)
         
         # Generate verification code ONLY for LOST items
         if form.type.data == 'LOST':
@@ -179,9 +213,39 @@ def post_item():
         db.session.add(item)
         db.session.commit()
         
+        # Trigger matching logic
+        find_matches(item)
+        
         flash('Item posted successfully!', 'success')
         return redirect(url_for('dashboard'))
     return render_template('post_item.html', title='Post Item', form=form)
+
+@app.route("/hod_dashboard")
+@login_required
+def hod_dashboard():
+    if current_user.role != 'HOD':
+        return redirect(url_for('home'))
+    pwd_form = HODPasswordChangeForm()
+    all_items = Item.query.filter_by(is_high_value=True).order_by(Item.created_at.desc()).all()
+    return render_template('hod_dashboard.html', all_items=all_items, pwd_form=pwd_form)
+
+@app.route("/hod/change_password", methods=['POST'])
+@login_required
+def hod_change_password():
+    if current_user.role != 'HOD':
+        return redirect(url_for('home'))
+    form = HODPasswordChangeForm()
+    if form.validate_on_submit():
+        if check_password_hash(current_user.password, form.old_password.data):
+            current_user.password = generate_password_hash(form.new_password.data)
+            db.session.commit()
+            flash('Password changed successfully!', 'success')
+        else:
+            flash('Incorrect current password.', 'danger')
+    else:
+        for err in form.errors.values():
+            flash(f"Error: {err[0]}", 'danger')
+    return redirect(url_for('hod_dashboard'))
 
 @app.route("/dashboard")
 @login_required
@@ -226,6 +290,12 @@ def report_item(item_id):
         flash('Report submitted for review', 'success')
         return redirect(url_for('item_detail', item_id=item.id))
     return render_template('report_item.html', title='Report Item', form=form, item=item)
+
+@app.route("/integrity")
+def integrity():
+    resolved_items = Item.query.filter_by(status='CLAIMED').order_by(Item.id.desc()).all()
+    reports = Report.query.order_by(Report.id.desc()).all()
+    return render_template('integrity.html', title="Network Integrity", resolved_items=resolved_items, reports=reports)
 
 @app.route("/claim/<int:item_id>", methods=['GET', 'POST'])
 @login_required

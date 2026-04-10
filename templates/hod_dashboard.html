@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row pt-4 pb-5 fade-in-up">
+    <!-- Header -->
+    <div class="col-12 mb-5 d-flex justify-content-between align-items-end flex-wrap gap-3">
+        <div>
+            <span class="badge-elite badge-emerald mb-4 d-inline-block">AUTHORIZATION: HOD MODULE</span>
+            <h1 class="display-5 fw-200 text-white mb-2 text-uppercase">HOD PANEL</h1>
+            <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">MANAGE HIGH-VALUE ITEMS AND SECURE YOUR CREDENTIALS.</p>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Change Password Section -->
+        <div class="col-lg-4">
+            <h4 class="text-white fw-300 mb-4 border-hairline-bottom pb-3">UPDATE CREDENTIALS</h4>
+            <div class="card card-elite p-4">
+                <form method="POST" action="{{ url_for('hod_change_password') }}">
+                    {{ pwd_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ pwd_form.old_password.label(class="form-label") }}
+                        {{ pwd_form.old_password(class="form-control" + (" is-invalid border-danger" if pwd_form.old_password.errors else "")) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ pwd_form.new_password.label(class="form-label") }}
+                        {{ pwd_form.new_password(class="form-control" + (" is-invalid border-danger" if pwd_form.new_password.errors else "")) }}
+                    </div>
+                    <div class="mb-4">
+                        {{ pwd_form.confirm_password.label(class="form-label") }}
+                        {{ pwd_form.confirm_password(class="form-control" + (" is-invalid border-danger" if pwd_form.confirm_password.errors else "")) }}
+                    </div>
+                    <div class="d-grid mt-4">
+                        {{ pwd_form.submit(class="btn btn-emerald-solid py-2") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- High Value Items List -->
+        <div class="col-lg-8">
+            <h4 class="text-white fw-300 mb-4 border-hairline-bottom pb-3">SECURED HIGH-VALUE ITEMS</h4>
+            <div class="row g-4">
+                {% for item in all_items %}
+                <div class="col-md-6">
+                    <a href="{{ url_for('item_detail', item_id=item.id) }}" class="text-decoration-none">
+                        <div class="card card-elite bg-surface glow-hover p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge-elite badge-emerald">{{ item.type }}</span>
+                                <small class="text-slate fw-500">{{ item.created_at.strftime('%Y.%m.%d') }}</small>
+                            </div>
+                            <h5 class="text-white fw-300 mb-2">{{ item.title }}</h5>
+                            <p class="text-slate fw-300 fs-7 mb-0"><i class="bi bi-building me-1"></i>{{ item.assigned_department }}</p>
+                        </div>
+                    </a>
+                </div>
+                {% else %}
+                <div class="col-12 py-4">
+                    <p class="text-slate fw-300 mb-0 opacity-50"><i class="bi bi-x-circle me-2"></i>No high-value items currently recorded globally.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

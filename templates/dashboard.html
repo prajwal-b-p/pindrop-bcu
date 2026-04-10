@@ -1,167 +1,148 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row pt-4">
-    <!-- Sidebar: Impact & Profile -->
-    <div class="col-lg-3 mb-5">
-        <div class="card border-0 shadow-premium p-4 sticky-top" style="top: 100px; border-radius: 24px;">
-            <div class="text-center mb-4">
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3"
-                    style="width: 80px; height: 80px; font-size: 2rem;">
-                    <i class="bi bi-person-circle"></i>
+<div class="row pt-4 mb-5">
+    <!-- Elite Sidebar: Metrics & Identity -->
+    <div class="col-lg-3 mb-5 fade-in-up">
+        <div class="card card-elite p-0 sticky-top glow-hover" style="top: 100px;">
+            <div class="p-5 text-center border-hairline-bottom">
+                <div class="bg-main border-hairline rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 relative" style="width: 80px; height: 80px;">
+                    <i class="bi bi-fingerprint text-emerald fs-1 opacity-75"></i>
                 </div>
-                <h5 class="fw-bold mb-1">{{ current_user.username }}</h5>
-                <p class="small text-muted mb-0">{{ current_user.email }}</p>
+                <h4 class="fw-300 mb-1 text-white text-uppercase letter-spacing-wide">{{ current_user.username }}</h4>
+                <p class="text-slate fw-300 mb-0 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.75rem;">{{ current_user.email }}</p>
             </div>
 
-            <hr class="opacity-10 my-4">
-
-            <div class="space-y-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.65rem;">Trust Score</small>
-                    <span class="badge bg-success-subtle text-success">Verified User</span>
+            <div class="p-4 bg-surface">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-hairline-bottom pb-3">
+                    <small class="text-slate fw-500 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">ACCOUNT STATUS</small>
+                    <span class="badge-elite badge-emerald px-2 py-1" style="font-size: 0.55rem;">VERIFIED</span>
                 </div>
-                <div class="progress mb-4" style="height: 6px;">
-                    <div class="progress-bar bg-success" style="width: 95%"></div>
+                
+                <div class="mb-5 mt-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-slate fw-500 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">COMMUNITY RATING</small>
+                        <small class="text-emerald fw-700">95%</small>
+                    </div>
+                    <div class="progress bg-main border-hairline rounded-0" style="height: 4px;">
+                        <div class="progress-bar bg-success" style="width: 95%;"></div>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon bg-light text-primary"
-                            style="width: 40px; height: 40px; font-size: 1.2rem;">
-                            <i class="bi bi-award-fill"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold">Community Hero</h6>
-                            <small class="text-secondary opacity-75">Level 3 Contributor</small>
-                        </div>
+                <div class="bg-main border-hairline p-3 d-flex align-items-center gap-3">
+                    <i class="bi bi-shield-check text-emerald fs-4"></i>
+                    <div>
+                        <h6 class="mb-0 fw-500 text-white text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.1em;">SYSTEM</h6>
+                        <small class="text-slate fw-300 text-uppercase" style="font-size: 0.65rem;">ONLINE</small>
                     </div>
                 </div>
             </div>
 
-            <a href="{{ url_for('post_item') }}" class="btn btn-primary w-100 py-3 fw-bold shadow-premium mt-2"
-                style="border-radius: 14px;">
-                <i class="bi bi-plus-lg me-2"></i> Report Item
-            </a>
+            <div class="p-0 border-hairline-top">
+                <a href="{{ url_for('post_item') }}" class="btn btn-emerald-solid w-100 py-4" style="font-size: 0.8rem;">
+                    REPORT AN ITEM <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Main Content: Active Reports -->
-    <div class="col-lg-9">
-        <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+    <!-- Main Content: Active Records -->
+    <div class="col-lg-9 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="d-flex justify-content-between align-items-end mb-5 border-hairline-bottom pb-4 flex-wrap gap-4">
             <div>
-                <h2 class="fw-800 mb-1">Impact Dashboard</h2>
-                <p class="text-secondary mb-0">Managing {{ items|length }} reported items across the community.</p>
+                <h1 class="display-6 fw-300 mb-2 text-uppercase text-white">MY DASHBOARD</h1>
+                <p class="text-slate mb-0 fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">YOU HAVE {{ items|length }} ACTIVE REPORTS</p>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-light btn-sm px-3 shadow-subtle border"><i class="bi bi-download me-1"></i>
-                    Export Data</button>
-                <button class="btn btn-light btn-sm px-3 shadow-subtle border"><i class="bi bi-gear-fill"></i></button>
+            <div class="d-flex gap-3">
+                <button class="btn btn-dark-slate"><i class="bi bi-download me-2"></i>EXPORT DATA</button>
             </div>
         </div>
 
-        <!-- High Level Stats Row -->
-        <div class="row g-3 mb-5">
+        <!-- Metric Databanks -->
+        <div class="row g-4 mb-5">
             <div class="col-md-4">
-                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
-                    style="border-radius: 18px;">
-                    <div class="stat-icon bg-danger-subtle text-danger" style="width: 48px; height: 48px;"><i
-                            class="bi bi-exclamation-triangle-fill"></i></div>
-                    <div>
-                        <h4 class="fw-800 mb-0">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h4>
-                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Active
-                            Losses</small>
+                <div class="card card-elite p-4 h-100 glow-hover">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <i class="bi bi-broadcast text-danger fs-4 opacity-75"></i>
+                        <span class="badge-elite badge-danger" style="font-size: 0.5rem;">OPEN</span>
                     </div>
+                    <h1 class="display-4 fw-200 text-white mb-0 lh-1">{{ items|selectattr('type', 'equalto', 'LOST')|list|length }}</h1>
+                    <small class="text-slate fw-500 mt-2 d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">LOST OR FOUND ITEMS</small>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
-                    style="border-radius: 18px;">
-                    <div class="stat-icon bg-success-subtle text-success" style="width: 48px; height: 48px;"><i
-                            class="bi bi-check-circle-fill"></i></div>
-                    <div>
-                        <h4 class="fw-800 mb-0">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h4>
-                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">Successful
-                            Returns</small>
+                <div class="card card-elite p-4 h-100 glow-hover">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <i class="bi bi-shield-check text-emerald fs-4 opacity-75"></i>
+                        <span class="badge-elite badge-emerald" style="font-size: 0.5rem;">RETURNED</span>
                     </div>
+                    <h1 class="display-4 fw-200 text-white mb-0 lh-1">{{ items|selectattr('status', 'equalto', 'CLAIMED')|list|length }}</h1>
+                    <small class="text-slate fw-500 mt-2 d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">SUCCESSFULLY RETURNED</small>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-0 shadow-premium p-3 d-flex flex-row align-items-center gap-3"
-                    style="border-radius: 18px;">
-                    <div class="stat-icon bg-primary-subtle text-primary" style="width: 48px; height: 48px;"><i
-                            class="bi bi-people-fill"></i></div>
-                    <div>
-                        <h4 class="fw-800 mb-0">12</h4>
-                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 0.6rem;">People
-                            Helped</small>
+                <div class="card card-elite p-4 h-100 bg-main">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <i class="bi bi-activity text-slate fs-4 opacity-50"></i>
                     </div>
+                    <h1 class="display-4 fw-200 text-slate mb-0 lh-1">12</h1>
+                    <small class="text-slate fw-500 mt-2 d-block text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">TOTAL ENGAGEMENT</small>
                 </div>
             </div>
         </div>
 
-        <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
-            <i class="bi bi-list-task text-primary"></i> Active Reports List
-        </h5>
+        <h4 class="fw-300 mb-4 text-white text-uppercase d-flex align-items-center gap-3">
+            <i class="bi bi-list text-emerald"></i> MY REPORTED ITEMS
+        </h4>
 
-        <!-- Reports List: High Density -->
-        <div class="space-y-3 mb-5">
+        <!-- Ledger Entries -->
+        <div class="d-grid gap-4 mb-5">
             {% for item in items %}
-            <div class="card border-0 shadow-premium p-3 fade-up"
-                style="border-radius: 20px; animation-delay: {{ loop.index0 * 0.05 }}s;">
-                <div class="row align-items-center g-3">
-                    <div class="col-auto">
-                        {% if item.image_file %}
-                        <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
-                            class="rounded-4 shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
-                        {% else %}
-                        <div class="bg-light rounded-4 d-flex align-items-center justify-content-center text-muted opacity-25"
-                            style="width: 64px; height: 64px;">
-                            <i class="bi bi-image fs-4"></i>
-                        </div>
+            <div class="card card-elite bg-main fade-in-up glow-hover d-flex flex-md-row" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+                <!-- Image Area -->
+                <div style="width: 150px; min-height: 150px;" class="border-hairline-end d-none d-md-block flex-shrink-0">
+                    {% if item.image_file %}
+                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.6; filter: grayscale(100%); transition: var(--transition-slow);" onmouseover="this.style.filter='grayscale(0%)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(100%)'; this.style.opacity='0.6';">
+                    {% else %}
+                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-surface">
+                        <i class="bi bi-box text-slate opacity-25" style="font-size: 2rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Content Area -->
+                <div class="card-body p-4 d-flex flex-column justify-content-center flex-grow-1">
+                    <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                        <h5 class="fw-300 mb-0 text-white text-uppercase">{{ item.title }}</h5>
+                        <span class="badge-elite {% if item.type == 'LOST' %}badge-danger{% else %}badge-emerald{% endif %}" style="padding: 0.2rem 0.5rem; font-size: 0.55rem;">
+                            {{ item.type }}
+                        </span>
+                        {% if item.status == 'CLAIMED' %}
+                        <span class="badge-elite" style="border-color: rgba(255,255,255,0.2); color: #fff; padding: 0.2rem 0.5rem; font-size: 0.55rem;">
+                            RESOLVED
+                        </span>
                         {% endif %}
                     </div>
-                    <div class="col">
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <h6 class="fw-bold mb-0 text-dark">{{ item.title }}</h6>
-                            <span class="badge {% if item.type == 'LOST' %}bg-danger{% else %}bg-success{% endif %}"
-                                style="font-size: 0.55rem; padding: 0.3rem 0.6rem;">{{ item.type }}</span>
-                            {% if item.status == 'CLAIMED' %}
-                            <span class="badge bg-secondary"
-                                style="font-size: 0.55rem; padding: 0.3rem 0.6rem;">RECOVERED</span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex gap-3 text-secondary" style="font-size: 0.75rem;">
-                            <span><i class="bi bi-geo-alt-fill me-1 text-primary-subtle"></i> {{ item.location }}</span>
-                            <span><i class="bi bi-calendar3 me-1 text-primary-subtle"></i> {{
-                                item.created_at.strftime('%b %d, %Y') }}</span>
-                        </div>
+                    <div class="d-flex flex-wrap gap-4 text-slate fw-300 mt-2" style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                        <span><i class="bi bi-geo-alt me-2 text-emerald"></i>{{ item.location }}</span>
+                        <span><i class="bi bi-clock me-2 text-emerald"></i>{{ item.created_at.strftime('%Y.%m.%d') }}</span>
                     </div>
-                    <div class="col-md-auto">
-                        {% if item.type == 'LOST' and item.status == 'OPEN' %}
-                        <div
-                            class="bg-primary bg-opacity-5 p-2 px-3 rounded-3 border border-primary border-opacity-10 d-flex flex-column align-items-center">
-                            <small class="text-uppercase fw-bold text-primary"
-                                style="font-size: 0.5rem; letter-spacing: 0.05em;">Token</small>
-                            <span class="font-monospace fw-bold text-primary small" style="letter-spacing: 0.1em;">{{
-                                item.verification_code }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('item_detail', item_id=item.id) }}"
-                                class="btn btn-light btn-sm px-3 fw-bold border-0"
-                                style="background: var(--brand-primary-soft); color: var(--brand-primary); border-radius: 12px;">Manage</a>
-                        </div>
-                    </div>
+                </div>
+                
+                <!-- Action Area -->
+                <div class="p-4 border-hairline-start bg-surface d-flex align-items-center justify-content-center flex-shrink-0" style="min-width: 150px;">
+                    <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-emerald-solid w-100">
+                        VIEW DETAILS
+                    </a>
                 </div>
             </div>
             {% else %}
-            <div class="text-center py-5 bg-white rounded-5 shadow-subtle border">
-                <i class="bi bi-journal-x display-4 text-muted opacity-25 mb-3 d-block"></i>
-                <h5 class="fw-bold">No active reports found</h5>
-                <p class="text-secondary small">Your reported items will appear here.</p>
-                <a href="{{ url_for('post_item') }}" class="btn btn-primary px-4 py-2 mt-2">Create First Post</a>
+            <div class="text-center py-5 border-hairline bg-surface mt-4">
+                <div class="mx-auto mb-4 border-hairline rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: var(--bg-main);">
+                    <i class="bi bi-journal-x text-slate opacity-50" style="font-size: 2.5rem;"></i>
+                </div>
+                <h4 class="fw-300 text-white text-uppercase mb-2">NO REPORTS YET</h4>
+                <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">YOU HAVEN'T REPORTED ANY ITEMS.</p>
+                <a href="{{ url_for('post_item') }}" class="btn btn-emerald-solid px-5 mt-4">REPORT AN ITEM</a>
             </div>
             {% endfor %}
         </div>

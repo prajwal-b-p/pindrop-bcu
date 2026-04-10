@@ -1,240 +1,250 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- Mission Driven Hero -->
-<section class="hero-section text-center text-lg-start mb-0" style="border-radius: 0 0 4rem 4rem;">
-    <div class="hero-gradient"></div>
-    <div class="container position-relative z-index-1">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-7 fade-up">
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 mb-4"
-                    style="border-radius: 12px; background: rgba(255,255,255,0.1) !important; color: white !important;">
-                    <i class="bi bi-geo-alt-fill me-1"></i> BCU Community Network
-                </span>
-                <h1 class="display-3 fw-800 mb-4 text-white">Reconnecting <span
-                        class="text-primary italic">Everything</span></h1>
-                <p class="lead text-light opacity-75 mb-5 pe-lg-5">The most trusted platform to report lost items and
-                    return found belongings within your campus community.</p>
-                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                    <a href="{{ url_for('post_item') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-premium">
-                        <i class="bi bi-plus-circle-fill me-2"></i> Report Something
-                    </a>
-                    <a href="#browse-feed" class="btn btn-outline-light btn-lg px-5 py-3 border-opacity-25">
-                        <i class="bi bi-search me-2"></i> Browse Feed
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <div class="card bg-white bg-opacity-10 border-white border-opacity-10 p-4 rounded-4 shadow-premium fade-up"
-                    style="animation-delay: 0.2s; backdrop-filter: blur(15px);">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="stat-icon bg-success text-white" style="width: 48px; height: 48px;"><i
-                                class="bi bi-check-circle"></i></div>
-                        <div>
-                            <h6 class="text-white mb-0 fw-bold">Verified Success</h6>
-                            <small class="text-light opacity-50">Helping colleagues every day</small>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div
-                            class="p-3 bg-white bg-opacity-5 rounded-3 border border-white border-opacity-10 d-flex align-items-center gap-3 mb-2">
-                            <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
-                            <small class="text-light">iPhone found at Library</small>
-                            <small class="ms-auto text-light opacity-50">Just now</small>
-                        </div>
-                        <div
-                            class="p-3 bg-white bg-opacity-5 rounded-3 border border-white border-opacity-10 d-flex align-items-center gap-3 mb-2">
-                            <div class="bg-primary rounded-circle" style="width: 8px; height: 8px;"></div>
-                            <small class="text-light">Blue Wallet lost in Cafeteria</small>
-                            <small class="ms-auto text-light opacity-50">15m ago</small>
-                        </div>
-                        <div
-                            class="p-3 bg-white bg-opacity-5 rounded-3 border border-white border-opacity-10 d-flex align-items-center gap-3">
-                            <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div>
-                            <small class="text-light">Keys returned successfully!</small>
-                            <small class="ms-auto text-light opacity-50">1h ago</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Obsidian Hero Section with Interactive Map -->
+<div class="row align-items-center min-vh-75 py-5 mb-5 fade-in-up">
+    <div class="col-lg-7 position-relative mb-5 mb-lg-0">
+        <span class="badge-elite badge-emerald mb-4 d-inline-block">POWERED BY PIN DROP</span>
+        <h1 class="display-title mb-4">
+            BCU<br>
+            <span class="text-slate" style="font-style: italic; font-weight: 300;">PIN DROP.</span>
+        </h1>
+        <p class="text-slate fs-4 fw-300 mb-5 pe-lg-5 lh-base">
+            A secure campus-wide platform connecting students to find lost belongings or securely return found items to their rightful owners.
+        </p>
+        <div class="d-flex gap-4 flex-wrap">
+            <a href="{{ url_for('post_item') }}" class="btn btn-emerald-solid">
+                REPORT AN ITEM <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+            <a href="#asset-ledger" class="btn btn-dark-slate">
+                BROWSE LISTINGS
+            </a>
         </div>
     </div>
-</section>
-
-<!-- Stats Bar -->
-<div class="container position-relative" style="margin-top: -3rem; z-index: 2;">
-    <div class="row g-3 justify-content-center">
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-premium p-4 text-center" style="border-radius: 20px;">
-                <h2 class="fw-800 text-primary mb-0">120+</h2>
-                <small class="text-secondary fw-bold text-uppercase"
-                    style="font-size: 0.65rem; letter-spacing: 0.1em;">Open Reports</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-premium p-4 text-center" style="border-radius: 20px;">
-                <h2 class="fw-800 text-success mb-0">85%</h2>
-                <small class="text-secondary fw-bold text-uppercase"
-                    style="font-size: 0.65rem; letter-spacing: 0.1em;">Return Rate</small>
+    <div class="col-lg-5">
+        <!-- Interactive Global Network Map -->
+        <div class="position-relative w-100 bg-main border-hairline glow-hover" style="aspect-ratio: 1/1;">
+            <div id="global-map" class="w-100 h-100 z-index-1"></div>
+            
+            <div class="position-absolute bottom-0 start-0 m-3 z-index-2 w-auto pointer-events-none">
+                <div class="border-hairline d-flex flex-column p-3" style="background: rgba(10, 10, 11, 0.85); backdrop-filter: blur(10px);">
+                    <small class="text-emerald fw-700 text-uppercase mb-1" style="letter-spacing: 0.1em; font-size: 0.65rem;">LIVE CAMPUS MAP</small>
+                    <span class="text-white fw-300 fs-5 lh-1">{{ items|selectattr('latitude')|list|length }} ITEMS MAPPED</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Community Discovery Feed -->
-<div class="container py-5 mt-4" id="browse-feed">
-    <div class="section-header mb-5 d-flex align-items-end justify-content-between flex-wrap gap-4">
+<div class="border-hairline-top pt-5 mb-5" id="asset-ledger">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 mb-5 fade-in-up">
         <div>
-            <h2 class="fw-800 mb-1 text-dark">Discovery Feed</h2>
-            <p class="text-secondary mb-0">Browse through the latest community reports.</p>
+            <h2 class="fw-300 display-6 mb-2">RECENT ACTIVITY</h2>
+            <p class="text-slate fw-300 mb-0">Discover items recently lost or found across the university campus.</p>
         </div>
-
-        <!-- Status Filter Toggles -->
-        <div class="d-flex bg-white p-1 rounded-4 shadow-subtle border">
-            <a href="{{ url_for('home', type='ALL', category=request.args.get('category')) }}"
-                class="btn btn-sm px-4 py-2 {% if not request.args.get('type') or request.args.get('type') == 'ALL' %}bg-primary text-white shadow-sm{% else %}text-secondary{% endif %} fw-bold border-0"
-                style="border-radius: 12px;">
-                All Activity
-            </a>
-            <a href="{{ url_for('home', type='LOST', category=request.args.get('category')) }}"
-                class="btn btn-sm px-4 py-2 {% if request.args.get('type') == 'LOST' %}bg-primary text-white shadow-sm{% else %}text-secondary{% endif %} fw-bold border-0"
-                style="border-radius: 12px;">
-                Lost
-            </a>
-            <a href="{{ url_for('home', type='FOUND', category=request.args.get('category')) }}"
-                class="btn btn-sm px-4 py-2 {% if request.args.get('type') == 'FOUND' %}bg-primary text-white shadow-sm{% else %}text-secondary{% endif %} fw-bold border-0"
-                style="border-radius: 12px;">
-                Found
-            </a>
+        <div class="d-flex gap-3 btn-group">
+            <a href="{{ url_for('home', type='ALL') }}" class="btn btn-dark-slate {% if not request.args.get('type') or request.args.get('type') == 'ALL' %}border-glow text-white{% endif %}">ALL</a>
+            <a href="{{ url_for('home', type='LOST') }}" class="btn btn-dark-slate {% if request.args.get('type') == 'LOST' %}border-glow text-white{% endif %}">LOST</a>
+            <a href="{{ url_for('home', type='FOUND') }}" class="btn btn-dark-slate {% if request.args.get('type') == 'FOUND' %}border-glow text-white{% endif %}">FOUND</a>
         </div>
     </div>
 
-    <!-- Category Pills -->
-    <div class="d-flex gap-2 overflow-auto pb-4 mb-5" style="scrollbar-width: none; -ms-overflow-style: none;">
-        <a href="{{ url_for('home', type=request.args.get('type')) }}"
-            class="category-pill shadow-sm {% if not request.args.get('category') %}active{% endif %}">
-            <i class="bi bi-grid-fill"></i> All Categories
+    <!-- Category Carousel -->
+    <div class="d-flex gap-3 overflow-auto pb-4 mb-4 scrollbar-hide fade-in-up" style="-ms-overflow-style: none; scrollbar-width: none;">
+        <a href="{{ url_for('home') }}" class="badge-elite flex-shrink-0 text-decoration-none {% if not request.args.get('category') %}bg-surface text-white{% else %}text-slate{% endif %}">
+            ALL SECTORS
         </a>
-        {% for category in categories %}
-        <a href="{{ url_for('home', category=category.id, type=request.args.get('type')) }}"
-            class="category-pill shadow-sm {% if request.args.get('category')|int == category.id %}active{% endif %}">
-            {% if category.name == 'Electronics' %}<i class="bi bi-laptop"></i>
-            {% elif category.name == 'Clothing' %}<i class="bi bi-tag"></i>
-            {% elif category.name == 'Keys' %}<i class="bi bi-key"></i>
-            {% elif category.name == 'Wallets/Purses' %}<i class="bi bi-wallet2"></i>
-            {% elif category.name == 'ID Cards' %}<i class="bi bi-card-heading"></i>
-            {% else %}<i class="bi bi-bookmark"></i>{% endif %}
-            {{ category.name }}
+        {% for cat in categories %}
+        <a href="{{ url_for('home', category=cat.id) }}" class="badge-elite flex-shrink-0 text-decoration-none {% if request.args.get('category')|int == cat.id %}bg-surface text-white{% else %}text-slate{% endif %}">
+            {{ cat.name }}
         </a>
         {% endfor %}
     </div>
 
-    <!-- Item Discovery Grid -->
-    <div class="row g-4">
+    <!-- Obsidian Asset Grid -->
+    <div class="row g-4 mb-5">
         {% for item in items %}
-        <div class="col-md-6 col-lg-4 col-xl-3 fade-up" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
-            <div class="card item-card-hover border-0 shadow-premium overflow-hidden h-100"
-                style="border-radius: 24px;">
-                <div class="card-img-container position-relative" style="height: 200px;">
-                    {% if item.image_file %}
-                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" alt="{{ item.title }}"
-                        class="h-100 w-100 object-fit-cover">
-                    {% else %}
-                    <div
-                        class="h-100 w-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-image text-secondary opacity-25" style="font-size: 3rem;"></i>
-                    </div>
-                    {% endif %}
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <span
-                            class="badge {% if item.type == 'LOST' %}bg-danger{% else %}bg-success{% endif %} shadow-sm px-3 py-2"
-                            style="border-radius: 12px; font-size: 0.65rem;">
-                            {{ item.type }}
-                        </span>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-2 mb-2 text-primary opacity-75 small fw-bold text-uppercase"
-                        style="letter-spacing: 0.05em;">
-                        <i class="bi bi-calendar3"></i> {{ item.date_occurred.strftime('%b %d') }}
-                    </div>
-                    <h5 class="fw-bold mb-3 text-dark text-truncate">{{ item.title }}</h5>
-                    <div class="d-flex flex-column gap-2 mb-4">
-                        <div class="d-flex align-items-center gap-2 text-secondary small">
-                            <i class="bi bi-geo-alt-fill text-primary"></i> <span class="text-truncate">{{ item.location
-                                }}</span>
+        <div class="col-md-6 col-lg-4 fade-in-up">
+            <a href="{{ url_for('item_detail', item_id=item.id) }}" class="text-decoration-none text-primary h-100 d-block">
+                <div class="card card-elite h-100 glow-hover">
+                    <!-- Image Area -->
+                    <div class="position-relative bg-main border-hairline-bottom" style="height: 220px;">
+                        {% if item.image_file %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8; filter: grayscale(50%);">
+                        {% else %}
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-box text-slate opacity-25" style="font-size: 4rem;"></i>
                         </div>
-                        <div class="d-flex align-items-center gap-2 text-secondary small">
-                            <i class="bi bi-tag-fill text-primary"></i> {{ item.category.name if item.category else
-                            'General' }}
+                        {% endif %}
+                        
+                        <!-- Status Badge Overlay -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge-elite {% if item.type == 'LOST' %}badge-danger{% else %}badge-emerald{% endif %}">
+                                {{ item.type }}
+                            </span>
                         </div>
                     </div>
-                    <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-light w-100 border-0 fw-bold"
-                        style="background: var(--brand-primary-soft); color: var(--brand-primary); border-radius: 14px;">
-                        View Details <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    
+                    <!-- Data Area -->
+                    <div class="card-body p-4 d-flex flex-column">
+                        <small class="text-muted fw-700 text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {{ item.category.name if item.category else 'UNCLASSIFIED' }}
+                        </small>
+                        <h4 class="text-white fw-300 mb-3 text-truncate lh-base">{{ item.title }}</h4>
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center border-hairline-top pt-3">
+                            <span class="text-slate fw-300" style="font-size: 0.8rem;">
+                                <i class="bi bi-geo-alt me-2 text-emerald"></i>{{ item.location|truncate(15) }}
+                            </span>
+                            <span class="text-slate fw-300" style="font-size: 0.8rem;">
+                                {{ item.created_at.strftime('%Y.%m.%d') }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         {% else %}
-        <div class="col-12 py-5 text-center fade-up">
-            <div class="stat-icon bg-light text-muted mx-auto mb-4" style="width: 100px; height: 100px;">
-                <i class="bi bi-search" style="font-size: 3rem;"></i>
+        <div class="col-12 py-5 text-center mt-5 fade-in-up">
+            <div class="d-inline-flex align-items-center justify-content-center bg-surface border-hairline mb-4" style="width: 80px; height: 80px;">
+                <i class="bi bi-slash-circle text-slate fs-1 opacity-50"></i>
             </div>
-            <h4 class="fw-bold">No active reports found</h4>
-            <p class="text-secondary">Be the first to report something and help a colleague!</p>
-            <a href="{{ url_for('post_item') }}" class="btn btn-primary mt-3 px-5 py-3 shadow-premium">Initialize First
-                Report</a>
+            <h3 class="fw-300 text-white mb-2">NO ITEMS FOUND</h3>
+            <p class="text-slate fw-300">There are no lost or found items matching your criteria.</p>
         </div>
         {% endfor %}
     </div>
-
-    <!-- Empty State / Load More -->
-    {% if items|length > 0 %}
-    <div class="mt-5 pt-5 text-center">
-        <h5 class="fw-bold mb-4">Can't find what you're looking for?</h5>
-        <div class="d-flex gap-3 justify-content-center">
-            <a href="{{ url_for('search') }}" class="btn btn-outline-primary px-5 py-3 fw-bold"
-                style="border-radius: 14px;">Browse Full Archive</a>
-            <a href="{{ url_for('post_item') }}" class="btn btn-primary px-5 py-3 fw-bold shadow-premium">Report a New
-                Item</a>
-        </div>
-    </div>
-    {% endif %}
 </div>
 
-<!-- Community Trust Section -->
-<section class="py-5 bg-dark" style="margin-top: 5rem; border-radius: 5rem 5rem 0 0;">
-    <div class="container py-5 text-center">
-        <h2 class="text-white fw-800 mb-5">Built for Community Trust</h2>
-        <div class="row g-5">
-            <div class="col-md-4">
-                <div class="stat-icon bg-white bg-opacity-10 text-primary mx-auto mb-4"
-                    style="width: 80px; height: 80px; font-size: 2rem;">
-                    <i class="bi bi-shield-lock-fill"></i>
+<!-- Scripts for Global Map -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mapData = [
+            {% for item in items %}
+                {% if item.latitude and item.longitude %}
+                {
+                    id: {{ item.id }},
+                    title: "{{ item.title|replace('"', '\\"') }}",
+                    type: "{{ item.type }}",
+                    lat: {{ item.latitude }},
+                    lng: {{ item.longitude }},
+                    url: "{{ url_for('item_detail', item_id=item.id) }}"
+                },
+                {% endif %}
+            {% endfor %}
+        ];
+
+        const bcuCoords = [12.9734, 77.5855];
+        const bcuBounds = L.latLngBounds([
+            [12.9600, 77.5700], // Southwest bounds
+            [12.9900, 77.6000]  // Northeast bounds
+        ]);
+
+        const map = L.map('global-map', { 
+            zoomControl: false,
+            maxBounds: bcuBounds,
+            maxBoundsViscosity: 1.0,
+            minZoom: 15
+        }).setView(bcuCoords, 16);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & Carto',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        /* ----- BCU CAMPUS ARCHITECTURE ----- */
+        const departments = [
+            {name: "BCU Admin Block", lat: 12.9723, lng: 77.5873},
+            {name: "Jnana Jyothi Auditorium", lat: 12.9751, lng: 77.5846},
+            {name: "Central College Cricket Ground", lat: 12.9760, lng: 77.5815},
+            {name: "UVCE College", lat: 12.9745, lng: 77.5858},
+            {name: "Dept of Chemistry", lat: 12.9738, lng: 77.5842},
+            {name: "Dept of Commerce", lat: 12.9742, lng: 77.5820},
+            {name: "Central Library", lat: 12.9725, lng: 77.5835}
+        ];
+
+        const deptIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#6c757d; width:6px; height:6px; border-radius:50%; border: 1px solid #fff;'></div>",
+            iconSize: [6, 6],
+            iconAnchor: [3, 3]
+        });
+
+        departments.forEach(dept => {
+            L.marker([dept.lat, dept.lng], {icon: deptIcon, interactive: false})
+             .bindTooltip(dept.name, {permanent: true, direction: 'right', className: 'dept-tooltip'})
+             .addTo(map);
+        });
+        /* ---------------------------------- */
+
+        const emeraldIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#00E676; width:12px; height:12px; border-radius:50%; box-shadow: 0 0 15px rgba(0, 230, 118, 0.8); border: 2px solid #fff;'></div>",
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        });
+
+        const dangerIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#FF3366; width:12px; height:12px; border-radius:50%; box-shadow: 0 0 15px rgba(255, 51, 102, 0.8); border: 2px solid #fff;'></div>",
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        });
+
+        const bounds = [];
+
+        mapData.forEach(item => {
+            const icon = item.type === 'LOST' ? dangerIcon : emeraldIcon;
+            const marker = L.marker([item.lat, item.lng], {icon: icon}).addTo(map);
+            
+            // Custom Elite Popup
+            const popupContent = `
+                <div style="background: #0A0A0B; color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.1); font-family: 'Inter', sans-serif;">
+                    <span style="font-size: 0.6rem; color: ${item.type === 'LOST' ? '#FF3366' : '#00E676'}; letter-spacing: 0.1em;">${item.type} ITEM</span>
+                    <h6 style="font-weight: 300; margin: 5px 0 10px 0;">${item.title}</h6>
+                    <a href="${item.url}" style="color: #fff; text-decoration: none; font-size: 0.7rem; letter-spacing: 0.1em; border-bottom: 1px solid #00E676;">VIEW DETAILS</a>
                 </div>
-                <h5 class="text-white fw-bold mb-3">Secure Verification</h5>
-                <p class="text-light opacity-50 small pe-lg-4">Every lost item is protected by a unique Ownership Token.
-                    Items are only returned once verified.</p>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-icon bg-white bg-opacity-10 text-success mx-auto mb-4"
-                    style="width: 80px; height: 80px; font-size: 2rem;">
-                    <i class="bi bi-camera-fill"></i>
-                </div>
-                <h5 class="text-white fw-bold mb-3">Visual Proof</h5>
-                <p class="text-light opacity-50 small pe-lg-4">Mandatory imaging ensures posters provide clear proof,
-                    making it easier for owners to recognize items.</p>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-icon bg-white bg-opacity-10 text-warning mx-auto mb-4"
-                    style="width: 80px; height: 80px; font-size: 2rem;">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <h5 class="text-white fw-bold mb-3">Colleague Support</h5>
-                <p class="text-light opacity-50 small pe-lg-4">A dedicated network of members helping each other restore
-                    peace of mind instantly.</p>
-            </div>
-        </div>
-    </div>
-</section>
+            `;
+            marker.bindPopup(popupContent, {
+                className: 'elite-popup',
+                closeButton: false
+            });
+
+            bounds.push([item.lat, item.lng]);
+        });
+
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 18 });
+        }
+    });
+</script>
+
+<style>
+/* Override Leaflet Popup to match Elite Vibe */
+.leaflet-popup-content-wrapper {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+.leaflet-popup-tip-container {
+    display: none;
+}
+.dept-tooltip {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #6c757d;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-shadow: 1px 1px 2px #000;
+}
+</style>
 {% endblock %}

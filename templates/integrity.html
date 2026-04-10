@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row pt-4 mb-5 fade-in-up">
+    <!-- Header -->
+    <div class="col-12 text-center mb-5 pb-4 border-hairline-bottom">
+        <i class="bi bi-shield-check text-emerald mb-3 d-block" style="font-size: 3rem; text-shadow: var(--shadow-emerald);"></i>
+        <h1 class="display-6 fw-200 mb-2 text-white text-uppercase">COMMUNITY TRUST</h1>
+        <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">A transparent record of successfully returned items to build trust across the BCU campus.</p>
+    </div>
+
+    <!-- Metrics -->
+    <div class="col-lg-12 mb-5">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="card card-elite p-4 p-md-5 bg-main text-center border-glow glow-hover h-100">
+                    <h1 class="display-3 fw-200 text-white mb-0 lh-1">{{ resolved_items|length }}</h1>
+                    <small class="text-emerald fw-700 mt-3 d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.15em;">ITEMS RECOVERED</small>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card card-elite p-4 p-md-5 bg-surface text-center h-100" style="{% if reports|length > 0 %}border-color: rgba(255, 51, 102, 0.3);{% endif %}">
+                    <h1 class="display-3 fw-200 text-slate mb-0 lh-1 {% if reports|length > 0 %}text-danger{% endif %}">{{ reports|length }}</h1>
+                    <small class="text-slate fw-700 mt-3 d-block text-uppercase {% if reports|length > 0 %}text-danger{% endif %}" style="font-size: 0.75rem; letter-spacing: 0.15em;">REPORTS UNDER REVIEW</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recovered Assets Timeline -->
+    <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="card card-elite bg-surface h-100">
+            <div class="p-4 border-hairline-bottom bg-main d-flex align-items-center gap-3">
+                <i class="bi bi-award text-emerald fs-4"></i>
+                <h5 class="fw-300 mb-0 text-white text-uppercase" style="letter-spacing: 0.1em;">RECENT SUCCESSES</h5>
+            </div>
+            <div class="p-0">
+                {% for item in resolved_items %}
+                <div class="p-4 border-hairline-bottom d-flex justify-content-between align-items-center hover-bg-main" style="transition: var(--transition-fast);">
+                    <div>
+                        <h6 class="text-white fw-300 text-uppercase mb-1">{{ item.title }}</h6>
+                        <small class="text-slate text-uppercase fw-500" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            <i class="bi bi-check-circle-fill text-emerald me-1"></i> RETURNED ON {{ item.created_at.strftime('%Y.%m.%d') }}
+                        </small>
+                    </div>
+                    <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-dark-slate btn-sm">VIEW DETAILS</a>
+                </div>
+                {% else %}
+                <div class="p-5 text-center">
+                    <i class="bi bi-slash-circle text-slate opacity-50 fs-1 mb-3 d-block"></i>
+                    <p class="text-slate fw-300 text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.1em;">No items have been returned yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Reports -->
+    <div class="col-lg-6">
+        <div class="card card-elite bg-surface h-100" style="border-top-color: rgba(255, 51, 102, 0.3) !important; border-top-width: 2px !important;">
+            <div class="p-4 border-hairline-bottom bg-main d-flex align-items-center gap-3">
+                <i class="bi bi-flag-fill text-danger fs-4"></i>
+                <h5 class="fw-300 mb-0 text-white text-uppercase" style="letter-spacing: 0.1em;">COMMUNITY REPORTS</h5>
+            </div>
+            <div class="p-0">
+                {% for report in reports %}
+                <div class="p-4 border-hairline-bottom d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge-elite badge-danger" style="font-size: 0.5rem; padding: 0.2rem 0.4rem;">REPORT {{ report.id }}</span>
+                        <a href="{{ url_for('item_detail', item_id=report.item_id) }}" class="text-slate text-decoration-none text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">VIEW ITEM <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+                    </div>
+                    <p class="text-white fw-300 mb-0" style="font-size: 0.9rem;">"{{ report.reason }}"</p>
+                </div>
+                {% else %}
+                <div class="p-5 text-center">
+                    <i class="bi bi-shield-check text-emerald opacity-50 fs-1 mb-3 d-block"></i>
+                    <p class="text-slate fw-300 text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.1em;">No active issues.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

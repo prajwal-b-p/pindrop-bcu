@@ -1,59 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center pt-5">
-    <div class="col-md-7 col-lg-6 col-xl-5">
-        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
-            <div class="card-header bg-dark text-white p-5 position-relative">
-                <div class="hero-gradient opacity-25"></div>
-                <div class="position-relative z-index-1 text-center">
-                    <div class="stat-icon bg-danger bg-opacity-25 mx-auto mb-3" style="width: 64px; height: 64px;">
-                        <i class="bi bi-flag-fill fs-3 text-white"></i>
-                    </div>
-                    <h3 class="fw-bold mb-1">Report Violation</h3>
-                    <p class="small text-light opacity-75 mb-0">Help us keep the community safe and trustworthy.</p>
-                </div>
+<div class="row justify-content-center pt-5 mb-5 fade-in-up">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="card card-elite p-0 border-danger glow-hover" style="border-color: rgba(255, 51, 102, 0.3) !important; box-shadow: var(--shadow-red);">
+            <div class="bg-main border-hairline-bottom p-5 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-danger mb-4 d-block" style="font-size: 3rem;"></i>
+                <h2 class="display-6 fw-200 mb-2 text-white text-uppercase">RAISE ANOMALY FLAG</h2>
+                <p class="text-slate fw-300 fs-6 mb-0 text-uppercase" style="letter-spacing: 0.1em;">FILE AN OFFICIAL SYSTEM DISCREPANCY.</p>
             </div>
 
-            <div class="card-body p-4 p-md-5">
-                <div class="alert alert-light border mb-4 p-3 rounded-4">
-                    <small class="text-uppercase fw-bold text-secondary d-block mb-1"
-                        style="font-size: 0.7rem;">Reporting Item</small>
-                    <div class="fw-bold text-dark">{{ item.title }}</div>
+            <div class="p-4 p-md-5 bg-surface">
+                <div class="bg-main border-hairline border-danger p-4 mb-5 text-center" style="border-color: rgba(255, 51, 102, 0.3) !important;">
+                    <small class="text-uppercase fw-700 text-danger d-block mb-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">TARGET LOG ITEM</small>
+                    <h4 class="fw-300 text-white text-uppercase mb-0">{{ item.title }}</h4>
                 </div>
 
                 <form method="POST" action="">
                     {{ form.hidden_tag() }}
-                    <div class="form-group mb-5">
-                        <label class="form-label fw-bold text-secondary small text-uppercase mb-3"
-                            style="letter-spacing: 0.1em;">Reason for Report</label>
+                    <div class="mb-5">
+                        {{ form.reason.label(class="form-label") }}
                         {% if form.reason.errors %}
-                        {{ form.reason(class="form-control form-control-lg is-invalid", placeholder="Describe the
-                        issue...") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.reason.errors %}<span>{{ error }}</span>{% endfor %}
+                        {{ form.reason(class="form-control is-invalid border-danger text-danger bg-main", placeholder="DEFINE THE SYSTEM VIOLATION...", rows="4") }}
+                        <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                            {% for error in form.reason.errors %}<i class="bi bi-exclamation-triangle me-1"></i> {{ error }}{% endfor %}
                         </div>
                         {% else %}
-                        {{ form.reason(class="form-control form-control-lg bg-light border-0 py-3", rows="4",
-                        placeholder="Describe the issue (e.g., spam, inappropriate content, false information)...") }}
+                        {{ form.reason(class="form-control bg-main", rows="4", placeholder="DEFINE THE SYSTEM VIOLATION (EX: INVALID DATA, SPAM)...") }}
                         {% endif %}
                     </div>
 
                     <div class="d-grid gap-3">
-                        {{ form.submit(class="btn btn-danger btn-lg py-3 fw-bold shadow-premium", value="Submit Report
-                        for Review") }}
-                        <a href="{{ url_for('item_detail', item_id=item.id) }}"
-                            class="btn btn-link text-muted text-decoration-none small text-center">
-                            Cancel & Return
+                        {{ form.submit(class="btn btn-danger py-3 fs-6 rounded-0 border-0 fw-500 text-uppercase", style="letter-spacing: 0.1em;", value="TRANSMIT IRREGULARITY") }}
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-dark-slate py-3 fs-6 text-uppercase" style="letter-spacing: 0.1em;">
+                            <i class="bi bi-x me-2"></i> ABORT REPORT
                         </a>
                     </div>
                 </form>
             </div>
 
-            <div class="card-footer bg-light border-0 p-4 text-center">
-                <p class="small text-muted mb-0">Our moderators review all reports within 24 hours.</p>
+            <div class="bg-main border-hairline-top p-4 text-center">
+                <small class="text-muted fw-300 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
+                    <i class="bi bi-shield-lock me-1"></i> MODERATORS REVIEW ANOMALY REPORTS WITHIN 24 H.
+                </small>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

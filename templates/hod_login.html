@@ -4,8 +4,8 @@
     <div class="col-md-8 col-lg-6 col-xl-5">
         <div class="mb-5 text-center">
             <i class="bi bi-shield-lock text-emerald opacity-75 mb-3 d-block" style="font-size: 3rem;"></i>
-            <h2 class="display-6 fw-200 text-white text-uppercase mb-2">RESTRICTED AREA</h2>
-            <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">AUTHENTICATION REQUIRED FOR ACCESS.</p>
+            <h2 class="display-6 fw-200 text-white text-uppercase mb-2">HOD AUTH MODULE</h2>
+            <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">RESTRICTED TO DEPARTMENT HEADS ONLY.</p>
         </div>
 
         <div class="card card-elite bg-surface p-4 p-md-5 glow-hover">
@@ -15,14 +15,14 @@
                 <div class="mb-5">
                     {{ form.username.label(class="form-label") }}
                     {% if form.username.errors %}
-                        {{ form.username(class="form-control is-invalid border-danger", placeholder="Enter authorization ID", autofocus=True) }}
+                        {{ form.username(class="form-control is-invalid border-danger", placeholder="Enter HOD ID", autofocus=True) }}
                         <div class="invalid-feedback text-danger fw-500 mt-2 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">
                             {% for error in form.username.errors %}
                                 <i class="bi bi-exclamation-triangle me-1"></i> {{ error }}
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control", placeholder="Enter authorization ID", autofocus=True) }}
+                        {{ form.username(class="form-control", placeholder="Enter HOD ID", autofocus=True) }}
                     {% endif %}
                 </div>
 
@@ -41,14 +41,14 @@
                 </div>
 
                 <div class="d-grid mt-5">
-                    {{ form.submit(class="btn btn-emerald-solid py-3 fs-6", value="ESTABLISH CONNECTION") }}
+                    {{ form.submit(class="btn btn-emerald-solid py-3 fs-6", value="ESTABLISH SECURE CONNECTION") }}
                 </div>
             </form>
             
             <div class="mt-5 text-center border-hairline-top pt-4">
-                <small class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em;">NO CLEARANCE YET?</small><br>
-                <a href="{{ url_for('register') }}" class="text-emerald text-decoration-none fw-500 text-uppercase mt-2 d-inline-block" style="letter-spacing: 0.1em; font-size: 0.75rem;">
-                    REQUEST ACCESS <i class="bi bi-arrow-right ms-1"></i>
+                <small class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em;">NOT AN HOD?</small><br>
+                <a href="{{ url_for('login') }}" class="text-emerald text-decoration-none fw-500 text-uppercase mt-2 d-inline-block" style="letter-spacing: 0.1em; font-size: 0.75rem;">
+                    RETURN TO STUDENT LOGIN <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
         </div>

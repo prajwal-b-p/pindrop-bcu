@@ -1,282 +1,360 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center pt-4">
-    <div class="col-lg-9">
-        <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 24px;">
-            <div class="card-header bg-dark text-white p-5 position-relative">
-                <div class="hero-gradient opacity-25"></div>
-                <div class="position-relative z-index-1">
-                    <span class="badge bg-primary mb-3 px-3 py-2" style="border-radius: 12px; font-size: 0.75rem;">
-                        <i class="bi bi-pencil-square me-1"></i> Community Report
-                    </span>
-                    <h2 class="display-6 fw-bold mb-2">Post a New Item</h2>
-                    <p class="text-light opacity-75 mb-0">Help reunite items with their owners by providing accurate
-                        details.</p>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="row justify-content-center py-5 fade-in-up">
+    <div class="col-lg-8 col-xl-7">
+        <div class="mb-5 text-center">
+            <i class="bi bi-journal-plus text-emerald opacity-75 mb-3 d-block" style="font-size: 3rem;"></i>
+            <h2 class="display-6 fw-200 text-white text-uppercase mb-2">REPORT AN ITEM</h2>
+            <p class="text-slate fw-300 text-uppercase" style="letter-spacing: 0.1em; font-size: 0.8rem;">PROVIDE DETAILS TO HELP IDENTIFY THE ITEM.</p>
+        </div>
+
+        <div class="card card-elite bg-surface p-4 p-md-5">
+            <form method="POST" action="" enctype="multipart/form-data" id="postForm">
+                {{ form.hidden_tag() }}
+                <!-- Hidden Spatial Inputs -->
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+
+                <!-- Primary Classification -->
+                <div class="row g-4 mb-5 pb-5 border-hairline-bottom">
+                    <div class="col-12 text-uppercase text-slate fw-700 mb-2" style="font-size: 0.65rem; letter-spacing: 0.15em;">TYPE & CATEGORY</div>
+                    <div class="col-md-6">
+                        {{ form.type.label(class="form-label") }}
+                        {{ form.type(class="form-select") }}
+                        {% if form.type.errors %}
+                        <div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;"><i class="bi bi-exclamation-triangle me-1"></i> {{ form.type.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.category.label(class="form-label") }}
+                        {{ form.category(class="form-select") }}
+                        {% if form.category.errors %}
+                        <div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;"><i class="bi bi-exclamation-triangle me-1"></i> {{ form.category.errors[0] }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
-            <div class="card-body p-4 p-md-5">
-                <form method="POST" action="" enctype="multipart/form-data" id="postItemForm">
-                    {{ form.hidden_tag() }}
-
-                    <!-- Type Selection -->
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase"
-                                style="letter-spacing: 0.05em;">Type of Report</label>
-                            <div class="d-flex gap-3">
-                                {{ form.type(class="form-select form-select-lg", id="itemType") }}
-                            </div>
+                <!-- Core Details -->
+                <div class="row g-4 mb-5 pb-5 border-hairline-bottom">
+                    <div class="col-12 text-uppercase text-slate fw-700 mb-2" style="font-size: 0.65rem; letter-spacing: 0.15em;">ITEM DETAILS & LOCATION</div>
+                    <div class="col-12">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control" + (" is-invalid border-danger" if form.title.errors else ""), placeholder="Item Name / Short Title") }}
+                        {% if form.title.errors %}<div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;">{{ form.title.errors[0] }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <!-- Spatial Drop Zone -->
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+                            <span class="text-uppercase text-slate fw-700" style="font-size: 0.65rem; letter-spacing: 0.15em;">CAMPUS LOCATION (CLICK ON MAP TO PINPOINT)</span>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase"
-                                style="letter-spacing: 0.05em;">Category</label>
-                            {{ form.category(class="form-select form-select-lg") }}
+                        <div id="registration-map" class="w-100 bg-main border-hairline mb-3" style="height: 300px; z-index: 1;"></div>
+                        
+                        {{ form.location.label(class="form-label d-none") }}
+                        <div class="position-relative">
+                            {{ form.location(class="form-control" + (" is-invalid border-danger" if form.location.errors else ""), placeholder="CLICK ON MAP TO AUTO-FILL OR TYPE SECTOR", id="location-input") }}
+                            <i class="bi bi-geo-alt position-absolute end-0 top-50 translate-middle-y me-3 text-emerald opacity-50"></i>
                         </div>
+                        {% if form.location.errors %}<div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;">{{ form.location.errors[0] }}</div>{% endif %}
                     </div>
 
-                    <!-- Dynamic Intelligence Banner -->
-                    <div id="typeBanner" class="alert border-0 rounded-4 mb-5 p-4 fade show d-none"
-                        style="transition: var(--transition);">
+                    <div class="col-12 mt-4">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid border-danger" if form.description.errors else ""), rows="3", placeholder="Provide detailed appearance features...") }}
+                        {% if form.description.errors %}<div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;">{{ form.description.errors[0] }}</div>{% endif %}
                     </div>
 
-                    <div class="row g-4 mb-4">
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Item Title</label>
-                            {{ form.title(class="form-control form-control-lg", placeholder="e.g. Silver MacBook Air
-                            13-inch") }}
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Detailed
-                                Description</label>
-                            {{ form.description(class="form-control form-control-lg", rows="4", placeholder="Include
-                            unique identifiers, marks, or specific location details...") }}
-                        </div>
+                    <div class="col-md-6 mt-4">
+                        {{ form.date_occurred.label(class="form-label") }}
+                        {{ form.date_occurred(class="form-control" + (" is-invalid border-danger" if form.date_occurred.errors else ""), type="date") }}
+                        {% if form.date_occurred.errors %}<div class="text-danger fw-500 mt-2" style="font-size: 0.65rem;">{{ form.date_occurred.errors[0] }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Visual Proof Capture -->
+                <div class="row g-4 mb-5 pb-5 border-hairline-bottom">
+                    <div class="col-12 d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase text-slate fw-700" style="font-size: 0.65rem; letter-spacing: 0.15em;">UPLOAD A PHOTO</span>
+                        <span class="badge-elite badge-danger" style="font-size: 0.5rem;" id="photoStatus">NO PHOTO PROVIDED</span>
                     </div>
 
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Specific
-                                Location</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 rounded-start-pill px-3"><i
-                                        class="bi bi-geo-alt text-primary"></i></span>
-                                {{ form.location(class="form-control form-control-lg border-start-0 rounded-end-pill
-                                px-3", placeholder="e.g. Science Lab 302") }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Date Occurred</label>
-                            {{ form.date_occurred(class="form-control form-control-lg rounded-pill px-4", type="date")
-                            }}
-                        </div>
-                    </div>
-
-                    <hr class="my-5 opacity-10">
-
-                    <!-- Contact Details -->
-                    <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-person-badge-fill text-primary"></i> Contact Information
-                    </h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Your Name</label>
-                            {{ form.contact_name(class="form-control form-control-lg", placeholder="Enter your full
-                            name") }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small text-uppercase">Phone Number</label>
-                            {{ form.contact_number(class="form-control form-control-lg", placeholder="e.g. +1 (555)
-                            000-0000") }}
-                        </div>
-                    </div>
-
-                    <!-- Enhanced Upload Area -->
-                    <div class="mb-5">
-                        <label class="form-label fw-bold text-secondary small text-uppercase mb-3">Visualization
-                            (Required)</label>
-                        <div id="dropZone" class="upload-area p-5 text-center border-2 dashed rounded-4"
-                            style="background: #f8fafc; border: 2px dashed #cbd5e1; cursor: pointer; transition: var(--transition);">
-
-                            <div id="uploadPlaceholder">
-                                <div class="stat-icon bg-white text-primary shadow-sm mx-auto mb-3"
-                                    style="width: 80px; height: 80px; font-size: 2rem;">
-                                    <i class="bi bi-cloud-arrow-up"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">Upload or Capture Photo</h5>
-                                <p class="text-muted small mb-4">A high-quality image is essential for verification.</p>
-                                <div class="d-flex justify-content-center gap-3">
-                                    <label for="fileInput" class="btn btn-primary px-4">
-                                        <i class="bi bi-folder2-open me-2"></i>Choose File
+                    <div class="col-12">
+                        <div class="bg-main border-hairline position-relative overflow-hidden glow-hover" style="height: 300px; cursor: pointer;">
+                            <video id="camera-feed" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0 z-index-1" autoplay playsinline style="display: none;"></video>
+                            <img id="photo-preview" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0 z-index-2" style="display: none;">
+                            
+                            <div id="camera-overlay" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center position-absolute top-0 start-0 z-index-3" style="background: rgba(0,0,0,0.6);">
+                                <i class="bi bi-camera text-slate mb-3" style="font-size: 3rem;"></i>
+                                <span class="text-white fw-300 text-uppercase letter-spacing-wide fs-6 mb-3">USE PHONE CAMERA</span>
+                                <div class="d-flex gap-3">
+                                    <button type="button" class="btn btn-dark-slate btn-sm" id="start-camera">OPEN CAMERA</button>
+                                    <label class="btn btn-dark-slate btn-sm mb-0">
+                                        UPLOAD FILE
+                                        {{ form.image(class="d-none", id="file-upload") }}
                                     </label>
-                                    <button type="button" class="btn btn-light px-4 border" onclick="openCamera()">
-                                        <i class="bi bi-camera-fill me-2"></i>Take Photo
-                                    </button>
                                 </div>
-                                {{ form.image(class="d-none", id="fileInput", onchange="previewFile(event)") }}
                             </div>
-
-                            <div id="imagePreviewContainer" class="d-none">
-                                <img id="imagePreview" class="rounded-4 shadow-standard mb-3"
-                                    style="max-height: 300px; width: auto; max-width: 100%; object-fit: contain;">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <button type="button" class="btn btn-danger btn-sm px-3 rounded-pill"
-                                        onclick="clearImage()">
-                                        <i class="bi bi-trash me-1"></i>Remove & Retry
-                                    </button>
-                                </div>
+                            
+                            <div id="camera-controls" class="position-absolute bottom-0 start-50 translate-middle-x mb-4 z-index-4 d-flex gap-3" style="display: none !important;">
+                                <button type="button" class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center" id="take-photo" style="width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.2);">
+                                    <div class="bg-white rounded-circle" style="width: 40px; height: 40px;"></div>
+                                </button>
+                                <button type="button" class="btn btn-dark-slate rounded-circle d-flex align-items-center justify-content-center" id="retake-photo" style="width: 60px; height: 60px; display: none !important;">
+                                    <i class="bi bi-arrow-counterclockwise fs-3"></i>
+                                </button>
                             </div>
                         </div>
+                        
+                        <input type="hidden" name="camera_image" id="camera_image">
+                        {% if form.image.errors %}
+                        <div class="text-danger fw-500 mt-3 text-uppercase text-center" style="font-size: 0.65rem;"><i class="bi bi-exclamation-triangle me-1"></i> {{ form.image.errors[0] }}</div>
+                        {% endif %}
                     </div>
+                </div>
 
-                    <input type="hidden" name="camera_image" id="cameraImageData">
-
-                    <div class="d-grid pt-3">
-                        {{ form.submit(class="btn btn-primary btn-lg py-3 fw-bold shadow-premium", value="Launch Report
-                        to Community") }}
+                <!-- High Value / HOD Handover -->
+                <div class="row g-4 mb-5 pb-5 border-hairline-bottom">
+                    <div class="col-12 text-uppercase text-slate fw-700 mb-2" style="font-size: 0.65rem; letter-spacing: 0.15em;">HOD HANDOVER (FOR HIGHER VALUE ITEMS)</div>
+                    
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check form-switch px-4 ps-5 py-2 bg-main border-hairline w-100">
+                            {{ form.is_high_value(class="form-check-input", role="switch") }}
+                            {{ form.is_high_value.label(class="form-check-label text-slate ms-2 fw-300 fs-6") }}
+                        </div>
                     </div>
-                </form>
-            </div>
+                    
+                    <div class="col-md-6">
+                        {{ form.assigned_department.label(class="form-label") }}
+                        {{ form.assigned_department(class="form-select bg-dark text-white border-hairline") }}
+                    </div>
+                </div>
+
+                <!-- Contact & Execution -->
+                <div class="row g-4 mb-5">
+                    <div class="col-12 text-uppercase text-slate fw-700 mb-2" style="font-size: 0.65rem; letter-spacing: 0.15em;">YOUR CONTACT INFO</div>
+                    
+                    <div class="col-md-6">
+                        {{ form.contact_name.label(class="form-label") }}
+                        {{ form.contact_name(class="form-control" + (" is-invalid border-danger" if form.contact_name.errors else ""), placeholder="Your full name") }}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {{ form.contact_number.label(class="form-label") }}
+                        {{ form.contact_number(class="form-control" + (" is-invalid border-danger" if form.contact_number.errors else ""), placeholder="Mobile No. e.g. 98xxxxxx") }}
+                    </div>
+                </div>
+
+                <div class="d-grid mt-5 pt-4 border-hairline-top">
+                    {{ form.submit(class="btn btn-emerald-solid py-4 fs-5", value="SUBMIT REPORT") }}
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Premium Camera Modal -->
-<div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-hover" style="border-radius: 20px; background: #000;">
-            <div class="modal-header border-0 p-4 position-absolute top-0 start-0 w-100 z-index-1"
-                style="background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);">
-                <h5 class="modal-title text-white fw-bold"><i class="bi bi-camera-video me-2"></i>Live Capture</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    onclick="stopCamera()"></button>
-            </div>
-            <div class="modal-body p-0 position-relative overflow-hidden" style="min-height: 400px;">
-                <video id="cameraFeed" autoplay playsinline class="w-100 h-100" style="object-fit: cover;"></video>
-                <canvas id="cameraCanvas" class="d-none"></canvas>
-            </div>
-            <div class="modal-footer border-0 justify-content-center p-4 bg-dark">
-                <button type="button"
-                    class="btn btn-light btn-lg rounded-circle d-flex align-items-center justify-content-center shadow-lg"
-                    style="width: 80px; height: 80px;" onclick="capturePhoto()">
-                    <i class="bi bi-camera-fill fs-2"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- Scripts for Map and Camera -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let cameraStream = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        /* ----- MAP INITIALIZATION (BCU CAMPUS) ----- */
+        const bcuCoords = [12.9734, 77.5855];
+        const bcuBounds = L.latLngBounds([
+            [12.9600, 77.5700], // Southwest bounds
+            [12.9900, 77.6000]  // Northeast bounds
+        ]);
+        
+        const map = L.map('registration-map', {
+            maxBounds: bcuBounds,
+            maxBoundsViscosity: 1.0,
+            minZoom: 15
+        }).setView(bcuCoords, 16);
+        
+        // CartoDB Dark Matter Elite Map Style
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & Carto',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
 
-    // Type Intelligence
-    document.getElementById('itemType').addEventListener('change', function () {
-        const banner = document.getElementById('typeBanner');
-        banner.classList.remove('d-none');
-        if (this.value === 'LOST') {
-            banner.style.background = 'rgba(239, 68, 68, 0.05)';
-            banner.style.borderLeft = '6px solid var(--danger)';
-            banner.innerHTML = `
-                <div class="d-flex align-items-start gap-3">
-                    <div class="stat-icon bg-danger-subtle text-danger" style="width: 40px; height: 40px; font-size: 1rem;">
-                        <i class="bi bi-shield-lock-fill"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold text-danger mb-1">Secure Discovery Flow</h6>
-                        <p class="text-secondary small mb-0">We will generate a unique <strong>Ownership Token</strong> for this item. Only share this with the person who finds your item to verify your belonging.</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            banner.style.background = 'rgba(16, 185, 129, 0.05)';
-            banner.style.borderLeft = '6px solid var(--success)';
-            banner.innerHTML = `
-                <div class="d-flex align-items-start gap-3">
-                    <div class="stat-icon bg-success-subtle text-success" style="width: 40px; height: 40px; font-size: 1rem;">
-                        <i class="bi bi-stars"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold text-success mb-1">Safe Return Protocol</h6>
-                        <p class="text-secondary small mb-0">Once posted, users can claim this by providing their unique discovery code. You will be able to verify this code through your dashboard.</p>
-                    </div>
-                </div>
-            `;
-        }
-    });
-    document.getElementById('itemType').dispatchEvent(new Event('change'));
+        /* ----- BCU CAMPUS ARCHITECTURE ----- */
+        const departments = [
+            {name: "BCU Admin Block", lat: 12.9723, lng: 77.5873},
+            {name: "Jnana Jyothi Auditorium", lat: 12.9751, lng: 77.5846},
+            {name: "Central College Cricket Ground", lat: 12.9760, lng: 77.5815},
+            {name: "UVCE College", lat: 12.9745, lng: 77.5858},
+            {name: "Dept of Chemistry", lat: 12.9738, lng: 77.5842},
+            {name: "Dept of Commerce", lat: 12.9742, lng: 77.5820},
+            {name: "Central Library", lat: 12.9725, lng: 77.5835}
+        ];
 
-    // Image Handlers
-    function previewFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            showPreview(e.target.result);
-            document.getElementById('cameraImageData').value = '';
-        };
-        reader.readAsDataURL(file);
-    }
+        const deptIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#6c757d; width:6px; height:6px; border-radius:50%; border: 1px solid #fff;'></div>",
+            iconSize: [6, 6],
+            iconAnchor: [3, 3]
+        });
 
-    function showPreview(src) {
-        document.getElementById('imagePreview').src = src;
-        document.getElementById('imagePreviewContainer').classList.remove('d-none');
-        document.getElementById('uploadPlaceholder').classList.add('d-none');
-        document.getElementById('dropZone').style.borderStyle = 'solid';
-        document.getElementById('dropZone').style.borderColor = 'var(--brand-primary)';
-    }
+        departments.forEach(dept => {
+            L.marker([dept.lat, dept.lng], {icon: deptIcon, interactive: false})
+             .bindTooltip(dept.name, {permanent: true, direction: 'right', className: 'dept-tooltip'})
+             .addTo(map);
+        });
+        /* ---------------------------------- */
 
-    function clearImage() {
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('imagePreviewContainer').classList.add('d-none');
-        document.getElementById('uploadPlaceholder').classList.remove('d-none');
-        document.getElementById('dropZone').style.borderStyle = 'dashed';
-        document.getElementById('dropZone').style.borderColor = '#cbd5e1';
-        document.getElementById('fileInput').value = '';
-        document.getElementById('cameraImageData').value = '';
-    }
+        // Emerald Marker Icon Definition
+        const emeraldIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#00E676; width:15px; height:15px; border-radius:50%; box-shadow: 0 0 15px rgba(0, 230, 118, 0.8); border: 2px solid #fff;'></div>",
+            iconSize: [15, 15],
+            iconAnchor: [7, 7]
+        });
 
-    // Camera Engine
-    function openCamera() {
-        const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
-        modal.show();
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(stream => {
-                cameraStream = stream;
-                document.getElementById('cameraFeed').srcObject = stream;
+        let marker = null;
+        const latInput = document.getElementById('latitude');
+        const lngInput = document.getElementById('longitude');
+        const locTextInput = document.getElementById('location-input');
+
+        // Handle Map Clicks to Plop Marker and Geocode
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            // Set Hidden Inputs
+            latInput.value = lat;
+            lngInput.value = lng;
+
+            // Manage Marker
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng, {icon: emeraldIcon}).addTo(map);
+            }
+
+            // Reverse Geocode for the text field using Nominatim
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+            .then(response => response.json())
+            .then(data => {
+                if(data && data.display_name) {
+                    // Extract a simplified name rather than the massive address block
+                    const parts = data.display_name.split(', ');
+                    const shortName = parts.slice(0, 3).join(', ');
+                    locTextInput.value = shortName;
+                } else {
+                    locTextInput.value = `SEC: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                }
             }).catch(err => {
-                alert('Camera Access Denied: ' + err.message);
-                modal.hide();
+                locTextInput.value = `SEC: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             });
-    }
+        });
 
-    function capturePhoto() {
-        const video = document.getElementById('cameraFeed');
-        const canvas = document.getElementById('cameraCanvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        document.getElementById('cameraImageData').value = dataUrl;
-        showPreview(dataUrl);
-        stopCamera();
-        bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
-    }
+        // Geolocation removed to lock viewport to Bengaluru City University campus.
 
-    function stopCamera() {
-        if (cameraStream) {
-            cameraStream.getTracks().forEach(t => t.stop());
-            cameraStream = null;
+
+        /* ----- CAMERA PROTOCOLS ----- */
+        const video = document.getElementById('camera-feed');
+        const canvas = document.createElement('canvas');
+        const startBtn = document.getElementById('start-camera');
+        const takeBtn = document.getElementById('take-photo');
+        const retakeBtn = document.getElementById('retake-photo');
+        const preview = document.getElementById('photo-preview');
+        const overlay = document.getElementById('camera-overlay');
+        const controls = document.getElementById('camera-controls');
+        const hiddenInput = document.getElementById('camera_image');
+        const fileUpload = document.getElementById('file-upload');
+        const statusBadge = document.getElementById('photoStatus');
+        
+        let stream = null;
+        
+        function stopStream() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.style.display = 'none';
+                stream = null;
+            }
         }
-    }
-
-    // Validation
-    document.getElementById('postItemForm').addEventListener('submit', function (e) {
-        if (!document.getElementById('fileInput').files.length && !document.getElementById('cameraImageData').value) {
-            e.preventDefault();
-            alert('A visualization (photo) is mandatory for post quality.');
-            document.getElementById('dropZone').style.borderColor = 'var(--danger)';
-            document.getElementById('dropZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        
+        startBtn.addEventListener('click', async function() {
+            try {
+                fileUpload.value = "";
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                overlay.style.display = 'none';
+                controls.style.setProperty('display', 'flex', 'important');
+                takeBtn.style.setProperty('display', 'flex', 'important');
+                retakeBtn.style.setProperty('display', 'none', 'important');
+                preview.style.display = 'none';
+                hiddenInput.value = "";
+                statusBadge.textContent = "OPTICS ACTIVE";
+                statusBadge.className = "badge-elite badge-emerald";
+            } catch (err) {
+                alert("CAMERA UNAVAILABLE OR PERMISSION DENIED.");
+            }
+        });
+        
+        takeBtn.addEventListener('click', function() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            hiddenInput.value = dataUrl;
+            
+            preview.src = dataUrl;
+            preview.style.display = 'block';
+            
+            stopStream();
+            
+            takeBtn.style.setProperty('display', 'none', 'important');
+            retakeBtn.style.setProperty('display', 'flex', 'important');
+            
+            statusBadge.textContent = "PHOTO CAPTURED";
+            statusBadge.className = "badge-elite badge-emerald";
+        });
+        
+        retakeBtn.addEventListener('click', function() {
+            startBtn.click();
+        });
+        
+        fileUpload.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                stopStream();
+                hiddenInput.value = ""; 
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    overlay.style.display = 'none';
+                    controls.style.setProperty('display', 'flex', 'important');
+                    takeBtn.style.setProperty('display', 'none', 'important');
+                    retakeBtn.style.setProperty('display', 'flex', 'important');
+                    
+                    statusBadge.textContent = "FILE ATTACHED";
+                    statusBadge.className = "badge-elite badge-emerald";
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
     });
 </script>
+<style>
+.dept-tooltip {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #6c757d;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-shadow: 1px 1px 2px #000;
+    pointer-events: none;
+}
+</style>
 {% endblock %}

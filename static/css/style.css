@@ -1,262 +1,304 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+/* 
+   REUNITED
+   Aesthetic: "Obsidian & Emerald" Elite Luxury Dashboard
+   Tokens: Extreme negative space, deep dark slate, vibrant emerald glows, hairline borders, ultra-thin and heavy contrast typography.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;700;900&display=swap');
 
 :root {
-    /* Brand Colors - Sophisticated Indigo & Emerald Palette */
-    --brand-primary: #6366f1;
-    --brand-primary-soft: rgba(99, 102, 241, 0.1);
-    --brand-primary-deep: #4f46e5;
-    --brand-secondary: #10b981;
-    --brand-secondary-soft: rgba(16, 185, 129, 0.1);
-    --brand-accent: #f59e0b;
+    /* Color Palette - Obsidian */
+    --bg-main: #020202; /* Pitch black */
+    --bg-surface: #0A0A0B; /* Extremely dark gray */
+    --bg-elevated: #111112; /* Elevated surface */
+    
+    /* Emerald Accents */
+    --brand-emerald: #00E676; /* Vivid Emerald */
+    --brand-emerald-dim: rgba(0, 230, 118, 0.1);
+    --brand-emerald-glow: rgba(0, 230, 118, 0.25);
+    
+    /* Dark Theme Utilities */
+    --text-primary: #FFFFFF;
+    --text-secondary: #8892B0; /* High-end slate text */
+    --text-muted: #4A4F68;
+    
+    /* Structural/Feedback */
+    --danger: #FF3366; /* Electric Crimson */
+    --danger-dim: rgba(255, 51, 102, 0.1);
+    --success: #00E676; /* Same as emerald */
+    --warning: #FFD54F; /* Soft champagne gold for warning */
 
-    /* Neutral Palette */
-    --bg-main: #fcfcfd;
-    --bg-darker: #f3f4f6;
-    --surface: #ffffff;
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-tertiary: #9ca3af;
-    --border-light: #f1f5f9;
-    --border-medium: #e2e8f0;
-
-    /* Semantic Colors */
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --success: #10b981;
-    --info: #3b82f6;
-
+    /* Borders & Lines */
+    --border-hairline: 1px solid rgba(255, 255, 255, 0.05);
+    --border-glow: 1px solid rgba(0, 230, 118, 0.3);
+    
     /* Shadows & Effects */
-    --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-standard: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-premium: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
-    --shadow-hover: 0 25px 50px -12px rgb(0 0 0 / 0.15);
-
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 18px;
-    --radius-pill: 9999px;
-
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* Project Specific - Community Vibe */
-    --lost-red: #ef4444;
-    --found-green: #10b981;
-    --recovered-gold: #f59e0b;
+    --shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.8);
+    --shadow-emerald: 0 0 20px rgba(0, 230, 118, 0.15);
+    --shadow-red: 0 0 20px rgba(255, 51, 102, 0.15);
+    
+    /* Base Settings */
+    --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* --- Core Resets & Body --- */
 body {
-    font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
     background-color: var(--bg-main);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -0.01em;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.brand-font {
-    font-family: 'Outfit', sans-serif;
-    letter-spacing: -0.02em;
+main {
+    flex: 1;
 }
 
-.fw-800 {
-    font-weight: 800 !important;
+/* --- Layout & Utilities --- */
+.bg-surface {
+    background-color: var(--bg-surface) !important;
 }
 
-/* Navbar Upgrade */
-.navbar {
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: saturate(180%) blur(15px);
-    -webkit-backdrop-filter: saturate(180%) blur(15px);
-    border-bottom: 1px solid var(--border-light);
-    padding: 1rem 0;
-    transition: var(--transition);
+.bg-elevated {
+    background-color: var(--bg-elevated) !important;
+}
+
+.text-emerald {
+    color: var(--brand-emerald) !important;
+}
+
+.text-slate {
+    color: var(--text-secondary) !important;
+}
+
+.border-hairline {
+    border: var(--border-hairline) !important;
+}
+
+.border-hairline-bottom {
+    border-bottom: var(--border-hairline) !important;
+}
+
+.border-hairline-top {
+    border-top: var(--border-hairline) !important;
+}
+
+/* --- Typography Options --- */
+.fw-200 { font-weight: 200 !important; }
+.fw-300 { font-weight: 300 !important; }
+.fw-900 { font-weight: 900 !important; letter-spacing: -0.03em; }
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 300;
+}
+
+.display-title {
+    font-size: 4.5rem;
+    font-weight: 200;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+}
+
+/* --- Elite Components --- */
+.card-elite {
+    background: var(--bg-surface);
+    border: var(--border-hairline);
+    border-radius: 0;
+    box-shadow: var(--shadow-deep);
+    transition: var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-elite:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-deep), 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.card-elite.glow-hover:hover {
+    border-color: rgba(0, 230, 118, 0.3);
+    box-shadow: var(--shadow-emerald);
+}
+
+/* --- Buttons --- */
+.btn {
+    border-radius: 0;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 1rem 2rem;
+    transition: var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-emerald {
+    background-color: transparent;
+    color: var(--brand-emerald);
+    border: 1px solid var(--brand-emerald);
+}
+
+.btn-emerald:hover {
+    background-color: var(--brand-emerald-dim);
+    color: var(--brand-emerald);
+    box-shadow: var(--shadow-emerald);
+}
+
+.btn-emerald-solid {
+    background-color: var(--brand-emerald);
+    color: var(--bg-main);
+    border: 1px solid var(--brand-emerald);
+    font-weight: 700;
+}
+
+.btn-emerald-solid:hover {
+    background-color: transparent;
+    color: var(--brand-emerald);
+    box-shadow: var(--shadow-emerald);
+}
+
+.btn-dark-slate {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border: var(--border-hairline);
+}
+
+.btn-dark-slate:hover {
+    background-color: transparent;
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text-primary);
+}
+
+/* --- Inputs & Forms --- */
+.form-control, .form-select {
+    background-color: var(--bg-main);
+    border: none;
+    border-bottom: var(--border-hairline);
+    border-radius: 0;
+    color: var(--text-primary);
+    padding: 1.25rem 0;
+    font-size: 1rem;
+    font-weight: 300;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    box-shadow: none;
+    border-bottom-color: var(--brand-emerald);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+    font-weight: 200;
+}
+
+.form-label {
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+}
+
+/* --- Badges --- */
+.badge-elite {
+    background: transparent;
+    border: var(--border-hairline);
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+}
+
+.badge-emerald {
+    color: var(--brand-emerald);
+    border-color: rgba(0, 230, 118, 0.3);
+    background: var(--brand-emerald-dim);
+}
+
+.badge-danger {
+    color: var(--danger);
+    border-color: rgba(255, 51, 102, 0.3);
+    background: var(--danger-dim);
+}
+
+/* --- Navbar Elite --- */
+.navbar-elite {
+    background-color: rgba(2, 2, 2, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: var(--border-hairline);
+    padding: 1.5rem 0;
+}
+
+.navbar-elite .nav-link {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: var(--transition-fast);
+}
+
+.navbar-elite .nav-link:hover, .navbar-elite .nav-link.active {
+    color: var(--text-primary);
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    font-size: 1.25rem;
+    color: var(--text-primary) !important;
 }
 
-.nav-link {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--text-secondary) !important;
-    transition: var(--transition);
+.navbar-brand strong {
+    font-weight: 900;
 }
 
-.nav-link:hover {
-    color: var(--brand-primary) !important;
+.brand-dot {
+    color: var(--brand-emerald);
+    font-weight: 900;
+    margin-left: -4px;
 }
 
-/* Hero Section */
-.hero-section {
-    background: #0f172a;
-    padding: 6rem 0;
-    position: relative;
-    overflow: hidden;
+/* --- Animations --- */
+.fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
-.hero-gradient {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15), transparent),
-        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1), transparent);
-}
-
-/* Card Modernization */
-.card {
-    background: var(--surface);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    transition: var(--transition);
-}
-
-.item-card-hover:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-premium);
-}
-
-.card-img-container {
-    height: 220px;
-    overflow: hidden;
-    position: relative;
-}
-
-.card-img-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-}
-
-.item-card-hover:hover .card-img-container img {
-    transform: scale(1.05);
-}
-
-/* Category Pills */
-.category-pill {
-    padding: 0.6rem 1.25rem;
-    background: white;
-    border: 1px solid var(--border-medium);
-    border-radius: var(--radius-pill);
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none !important;
-    white-space: nowrap;
-}
-
-.category-pill:hover,
-.category-pill.active {
-    background: var(--brand-primary);
-    color: white !important;
-    border-color: var(--brand-primary);
-    transform: translateY(-2px);
-}
-
-/* Utility Classes */
-.stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    flex-shrink: 0;
-}
-
-.shadow-premium {
-    box-shadow: var(--shadow-premium) !important;
-}
-
-.shadow-subtle {
-    box-shadow: var(--shadow-subtle) !important;
-}
-
-.space-y-3>*+* {
-    margin-top: 1rem;
-}
-
-.space-y-4>*+* {
-    margin-top: 1.5rem;
-}
-
-.fade-up {
-    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
+@keyframes fadeInUp {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.hover-white:hover {
-    color: white !important;
+/* Scrollbar customization */
+::-webkit-scrollbar {
+    width: 6px;
 }
-
-/* Buttons */
-.btn {
-    font-weight: 700;
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
 }
-
-.btn-primary {
-    background: var(--brand-primary);
-    border: none;
-    color: white;
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface);
+    border-radius: 0;
 }
-
-.btn-primary:hover {
-    background: var(--brand-primary-deep);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
-}
-
-/* Verification Box */
-.verification-code-box {
-    background: var(--brand-primary-soft);
-    border: 2px dashed var(--brand-primary);
-    border-radius: var(--radius-md);
-    padding: 2rem;
-    text-align: center;
-}
-
-.verification-code-text {
-    font-family: 'Outfit', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--brand-primary-deep);
-    letter-spacing: 0.2rem;
+::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-emerald);
 }

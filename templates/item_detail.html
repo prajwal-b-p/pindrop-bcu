@@ -1,226 +1,169 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center pt-4">
-    <div class="col-lg-11">
-        <!-- Explorer Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 slide-in">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 bg-white shadow-subtle px-3 py-2 rounded-pill border">
-                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}"
-                            class="text-decoration-none text-muted">Discovery Feed</a></li>
-                    <li class="breadcrumb-item active fw-bold text-primary">Item #LF-{{ item.id }}</li>
-                </ol>
-            </nav>
-            <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted fw-bold text-uppercase"
-                    style="font-size: 0.65rem; letter-spacing: 0.05em;">Published</span>
-                <span class="badge bg-light text-dark border rounded-pill">{{ item.created_at.strftime('%b %d, %Y')
-                    }}</span>
-            </div>
-        </div>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-        <div class="card border-0 shadow-premium overflow-hidden mb-5" style="border-radius: 32px;">
-            <div class="row g-0">
-                <!-- Visual Proof Section -->
-                <div class="col-lg-7 position-relative" style="background: #0f172a; min-height: 550px;">
-                    {% if item.image_file %}
-                    <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100"
-                        style="object-fit: cover; opacity: 0.9;" alt="{{ item.title }}">
+<div class="row pt-4 mb-5 fade-in-up">
+    <!-- Visual Proof Column -->
+    <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="card card-elite bg-main p-0 h-100 glow-hover">
+            {% if item.image_file %}
+            <div class="position-relative h-100 min-vh-50 w-100 border-hairline-bottom">
+                <img src="{{ url_for('static', filename='uploads/' + item.image_file) }}" class="w-100 h-100 object-fit-cover" style="opacity: 0.75; filter: grayscale(80%) contrast(1.2); transition: var(--transition-slow);" onmouseover="this.style.filter='grayscale(0%) contrast(1)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(80%) contrast(1.2)'; this.style.opacity='0.75';">
+                
+                <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                    <span class="badge-elite {% if item.type == 'LOST' %}badge-danger{% else %}badge-emerald{% endif %} mb-3">
+                        {{ item.type }} ITEM
+                    </span>
+                    <h2 class="display-6 fw-300 text-white mb-2 text-uppercase">{{ item.title }}</h2>
+                    <p class="text-slate fw-300 text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.1em;"><i class="bi bi-upc-scan me-2 text-emerald"></i>REPORT ID: {{ item.id }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="d-flex flex-column align-items-center justify-content-center h-100 min-vh-50 p-5 bg-surface text-center border-hairline-bottom">
+                <i class="bi bi-image text-slate opacity-25 mb-4" style="font-size: 5rem;"></i>
+                <h4 class="text-white fw-200 text-uppercase">NO PHOTO UPLOADED</h4>
+                <p class="text-slate fw-300 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.1em;">TEXT DETAILS ONLY</p>
+            </div>
+            {% endif %}
+
+            <!-- Spatial Marker Map -->
+            {% if item.latitude and item.longitude %}
+            <div id="item-map" class="w-100 bg-main" style="height: 300px; z-index: 1;"></div>
+            {% else %}
+            <div class="w-100 bg-main d-flex flex-column align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-geo text-slate opacity-25 fs-1 mb-2"></i>
+                <small class="text-slate fw-500 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.15em;">NO MAP PIN PROVIDED</small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Data & Telemetry Column -->
+    <div class="col-lg-6">
+        <div class="card card-elite bg-surface h-100 d-flex flex-column">
+            <div class="p-5 border-hairline-bottom d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-300 text-white text-uppercase mb-1">ITEM DETAILS</h5>
+                    <small class="text-emerald fw-500 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">STATUS: {% if item.status == 'CLAIMED' %}RETURNED{% else %}OPEN{% endif %}</small>
+                </div>
+                <div class="bg-main border-hairline p-3 text-center">
+                    <i class="bi bi-clock-history d-block text-slate mb-1"></i>
+                    <span class="text-white fw-500" style="font-size: 0.75rem;">{{ item.created_at.strftime('%Y.%m.%d') }}</span>
+                </div>
+            </div>
+
+            <div class="p-5 flex-grow-1">
+                <div class="mb-5">
+                    <small class="text-slate text-uppercase fw-700 d-block mb-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">DESCRIPTION</small>
+                    <p class="text-white fw-300 lh-lg" style="font-size: 1rem;">{{ item.description }}</p>
+                </div>
+
+                <div class="row g-4 mb-5 border-hairline-top pt-5">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-geo-alt fs-3 text-emerald opacity-75"></i>
+                            <div>
+                                <small class="text-slate text-uppercase fw-700 d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.15em;">REPORTED LOCATION</small>
+                                <span class="text-white fw-300">{{ item.location }}</span>
+                                {% if item.latitude and item.longitude %}
+                                <span class="text-muted d-block" style="font-size: 0.65rem;">PIN: {{ item.latitude|round(4) }}, {{ item.longitude|round(4) }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-calendar-event fs-3 text-emerald opacity-75"></i>
+                            <div>
+                                <small class="text-slate text-uppercase fw-700 d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.15em;">DATE REPORTED</small>
+                                <span class="text-white fw-300">{{ item.date_occurred.strftime('%Y.%m.%d') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-person-badge fs-3 text-emerald opacity-75"></i>
+                            <div>
+                                <small class="text-slate text-uppercase fw-700 d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.15em;">REPORTED BY</small>
+                                <span class="text-white fw-300">{{ item.contact_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-telephone fs-3 text-emerald opacity-75"></i>
+                            <div>
+                                <small class="text-slate text-uppercase fw-700 d-block mb-1" style="font-size: 0.65rem; letter-spacing: 0.15em;">CONTACT NUMBER</small>
+                                <span class="text-white fw-300">{{ item.contact_number }}</span>
+                            </div>
+                        </div>
+                    </div>
                     {% else %}
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-white bg-dark">
-                        <i class="bi bi-camera-video-off opacity-25" style="font-size: 5rem;"></i>
-                        <p class="fw-bold mt-3 opacity-50">No Visual Proof Attached</p>
+                    <div class="col-12">
+                        <div class="bg-main border-hairline p-4 d-flex align-items-center gap-3 glow-hover">
+                            <i class="bi bi-lock-fill text-danger fs-3"></i>
+                            <div>
+                                <span class="text-white fw-500 text-uppercase d-block mb-1" style="font-size: 0.75rem;">CONTACT INFO HIDDEN</span>
+                                <a href="{{ url_for('login') }}" class="text-emerald text-decoration-none text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.1em;">LOG IN TO VIEW DETAILS <i class="bi bi-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
                     </div>
                     {% endif %}
-
-                    <!-- Floating Badges -->
-                    <div class="position-absolute top-0 start-0 p-4 d-flex flex-column gap-2">
-                        <span
-                            class="badge bg-{{ 'danger' if item.type == 'LOST' else 'success' }} px-4 py-2 fs-6 shadow-premium border border-white border-opacity-25"
-                            style="border-radius: 14px; backdrop-filter: blur(10px);">
-                            <i
-                                class="bi bi-{{ 'exclamation-circle' if item.type == 'LOST' else 'check-circle' }} me-2"></i>
-                            STATUS: {{ item.type }}
-                        </span>
-                        {% if item.status == 'CLAIMED' %}
-                        <span class="badge bg-warning text-dark px-4 py-2 fs-6 shadow-premium"
-                            style="border-radius: 14px;">
-                            <i class="bi bi-stars me-2"></i> RECOVERED
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Case Details Section -->
-                <div class="col-lg-5 bg-white">
-                    <div class="card-body p-4 p-xl-5 h-100 d-flex flex-column">
-                        <div class="mb-5">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-primary bg-opacity-10 text-primary border-0 rounded-pill px-3">{{
-                                    item.category.name if item.category else 'General' }}</span>
-                                <span class="text-secondary small font-monospace">Case REF: LF-{{ item.id }}</span>
-                            </div>
-                            <h1 class="fw-800 text-dark mb-4">{{ item.title }}</h1>
-                            <div class="p-4 bg-light rounded-4 border-start border-primary border-4 mb-4">
-                                <p class="text-secondary mb-0 fw-medium" style="line-height: 1.8;">{{ item.description
-                                    }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Metadata Horizon -->
-                        <div class="row g-4 mb-5">
-                            <div class="col-6">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"
-                                        style="width: 44px; height: 44px;"><i class="bi bi-geo-alt-fill"></i></div>
-                                    <div>
-                                        <small class="text-secondary d-block fw-bold"
-                                            style="font-size: 0.6rem; letter-spacing: 0.05em;">LOCATION</small>
-                                        <span class="fw-bold text-dark">{{ item.location }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"
-                                        style="width: 44px; height: 44px;"><i class="bi bi-person-badge-fill"></i></div>
-                                    <div>
-                                        <small class="text-secondary d-block fw-bold"
-                                            style="font-size: 0.6rem; letter-spacing: 0.05em;">REPORTER</small>
-                                        <span class="fw-bold text-dark">{{ item.contact_name }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Secure Interaction Area -->
-                        <div class="mt-auto d-grid gap-3 p-4 bg-dark bg-opacity-5 rounded-4 border">
-                            {% if item.status == 'CLAIMED' %}
-                            <div class="text-center py-3">
-                                <div class="stat-icon bg-success text-white mx-auto mb-3"
-                                    style="width: 56px; height: 56px;"><i class="bi bi-check-lg"></i></div>
-                                <h6 class="fw-800 text-success mb-2">Item Returned!</h6>
-                                <p class="small text-secondary mb-0">This report has been successfully resolved through
-                                    our community network.</p>
-                            </div>
-                            {% elif not current_user.is_authenticated %}
-                            <div class="text-center py-2">
-                                <p class="small text-secondary fw-bold mb-3">Login to interact with this report</p>
-                                <a href="{{ url_for('login') }}"
-                                    class="btn btn-primary btn-lg w-100 py-3 shadow-premium"
-                                    style="border-radius: 16px;">
-                                    Authenticate <i class="bi bi-chevron-right ms-1"></i>
-                                </a>
-                            </div>
-                            {% elif current_user.id == item.user_id %}
-                            {% if item.type == 'FOUND' %}
-                            <div class="text-center">
-                                <p class="small text-secondary fw-bold mb-3">Owner reaching out?</p>
-                                <a href="{{ url_for('claim_item', item_id=item.id) }}"
-                                    class="btn btn-primary btn-lg w-100 py-3 shadow-premium"
-                                    style="border-radius: 16px;">
-                                    <i class="bi bi-shield-lock-fill me-2"></i> Verify & Close Case
-                                </a>
-                            </div>
-                            {% else %}
-                            <div
-                                class="bg-primary bg-opacity-5 p-4 rounded-4 text-center border border-primary border-opacity-10">
-                                <small class="text-primary fw-bold text-uppercase d-block mb-3"
-                                    style="letter-spacing: 0.1em; font-size: 0.65rem;">Your Ownership Code</small>
-                                <div class="h2 font-monospace fw-800 text-primary mb-3">{{ item.verification_code }}
-                                </div>
-                                <p class="small text-secondary mb-0">Share this code only with the person who finds your
-                                    item.</p>
-                            </div>
-                            {% endif %}
-                            {% else %}
-                            <!-- Stranger Interactions -->
-                            {% if item.type == 'FOUND' %}
-                            {% if matching_lost_items %}
-                            <div
-                                class="bg-success bg-opacity-5 p-4 rounded-4 border border-success border-opacity-10 mb-2">
-                                <h6 class="fw-bold text-success mb-2"><i class="bi bi-magic me-2"></i>Smart-Match Active
-                                </h6>
-                                <p class="small text-secondary mb-3">Your reported loss matches this discovery. Use your
-                                    code to claim.</p>
-                                <div class="d-grid gap-2">
-                                    {% for lost in matching_lost_items %}
-                                    <div class="p-2 bg-white rounded-3 border text-center">
-                                        <small class="text-muted d-block">{{ lost.title }}</small>
-                                        <span class="font-monospace fw-bold text-primary">{{ lost.verification_code
-                                            }}</span>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% else %}
-                            <div
-                                class="bg-warning bg-opacity-5 p-4 rounded-4 border border-warning border-opacity-10 mb-2">
-                                <h6 class="fw-bold text-warning-emphasis mb-1">Is this yours?</h6>
-                                <p class="small text-secondary mb-3">Report your loss first to generate a secure
-                                    Ownership Code.</p>
-                                <a href="{{ url_for('post_item', type='LOST', category=item.category_id) }}"
-                                    class="btn btn-warning btn-sm fw-bold w-100 py-2" style="border-radius: 10px;">
-                                    Report My Loss <i class="bi bi-plus-lg ms-1"></i>
-                                </a>
-                            </div>
-                            {% endif %}
-                            <a href="mailto:{{ item.user.email }}" class="btn btn-outline-primary btn-lg w-100 py-3"
-                                style="border-radius: 16px;">
-                                <i class="bi bi-envelope-heart-fill me-2"></i> Message Finder
-                            </a>
-                            {% else %}
-                            <a href="mailto:{{ item.user.email }}"
-                                class="btn btn-primary btn-lg w-100 py-3 shadow-premium" style="border-radius: 16px;">
-                                <i class="bi bi-hand-thumbs-up-fill me-2"></i> I Found This Item!
-                            </a>
-                            <div class="text-center mt-2">
-                                <a href="{{ url_for('report_item', item_id=item.id) }}"
-                                    class="btn btn-link text-danger text-decoration-none small p-0 fw-bold">
-                                    <i class="bi bi-flag-fill me-1"></i> Report Violation
-                                </a>
-                            </div>
-                            {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Safe Exchange Guide -->
-        <div class="card border-0 bg-dark text-white p-5 mb-5" style="border-radius: 32px;">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-7">
-                    <h3 class="fw-800 mb-4">Safe Exchange Protocol</h3>
-                    <div class="row g-4 text-start">
-                        <div class="col-md-6 d-flex gap-3">
-                            <i class="bi bi-people-fill fs-3 text-primary"></i>
-                            <div>
-                                <h6 class="fw-bold">Public Location</h6>
-                                <p class="small text-light opacity-50 mb-0">Always meet at university-designated safe
-                                    zones or busy cafeterias.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 d-flex gap-3">
-                            <i class="bi bi-shield-lock-fill fs-3 text-success"></i>
-                            <div>
-                                <h6 class="fw-bold">Secure Verification</h6>
-                                <p class="small text-light opacity-50 mb-0">The finder must verify the Ownership Code
-                                    before handing over the item.</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Resolution Controls -->
+            <div class="p-0 mt-auto border-hairline-top d-flex flex-wrap">
+                {% if item.type == 'FOUND' and item.status != 'CLAIMED' %}
+                <a href="{{ url_for('claim_item', item_id=item.id) }}" class="btn btn-emerald-solid flex-grow-1 py-4 text-center">
+                    CLAIM THIS ITEM <i class="bi bi-check2-circle ms-2"></i>
+                </a>
+                {% endif %}
+                
+                {% if item.status == 'CLAIMED' %}
+                <div class="bg-emerald text-main w-100 py-4 text-center border-hairline-bottom text-uppercase fw-700 letter-spacing-wide d-flex justify-content-center align-items-center gap-2" style="background: var(--brand-emerald); color: var(--bg-main);">
+                    <i class="bi bi-shield-check-fill"></i> ITEM SUCCESSFULLY RETURNED 
                 </div>
-                <div class="col-lg-5">
-                    <div class="p-4 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-10">
-                        <h6 class="fw-bold mb-3"><i class="bi bi-award-fill text-warning me-2"></i>Community Impact</h6>
-                        <p class="small text-light opacity-50">Every successful return builds 10 points toward your
-                            Community Trust Score.</p>
-                    </div>
-                </div>
+                {% endif %}
+
+                {% if current_user.is_authenticated and item.user_id != current_user.id %}
+                <a href="{{ url_for('report_item', item_id=item.id) }}" class="btn btn-dark-slate flex-grow-1 py-4 text-center text-danger">
+                    <i class="bi bi-flag-fill me-2"></i> REPORT ISSUE
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+{% if item.latitude and item.longitude %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lat = {{ item.latitude }};
+        const lng = {{ item.longitude }};
+        
+        const map = L.map('item-map', { zoomControl: false }).setView([lat, lng], 15);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & Carto',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        const emeraldIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#00E676; width:20px; height:20px; border-radius:50%; box-shadow: 0 0 20px rgba(0, 230, 118, 1); border: 2px solid #fff;'></div>",
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        L.marker([lat, lng], {icon: emeraldIcon}).addTo(map);
+    });
+</script>
+{% endif %}
 {% endblock %}

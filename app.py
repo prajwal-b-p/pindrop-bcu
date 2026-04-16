@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import secrets
 import string
+import base64
 
 # Import our models and forms
 from models import db, User, Item, Category, Match, Report
@@ -21,7 +22,10 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
+from flask_migrate import Migrate
+
 db.init_app(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -37,7 +41,6 @@ def save_picture(form_picture):
     form_picture.save(picture_path)
     return final_name
 
-import base64
 def save_base64_picture(data_url):
     """Saves a base64 camera capture to static/uploads"""
     if not data_url or ',' not in data_url:
@@ -276,7 +279,8 @@ def search():
     items = Item.query.filter(
         (Item.title.contains(query)) | (Item.description.contains(query))
     ).all() if query else []
-    return render_template('home.html', items=items, title="Search Results")
+    categories = Category.query.all()
+    return render_template('home.html', items=items, categories=categories, title="Search Results")
 
 @app.route("/report/<int:item_id>", methods=['GET', 'POST'])
 @login_required

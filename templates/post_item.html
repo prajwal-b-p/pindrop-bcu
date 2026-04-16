@@ -279,6 +279,7 @@
         startBtn.addEventListener('click', async function() {
             try {
                 fileUpload.value = "";
+                stopStream(); // added to prevent resource leaks
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
                 });

@@ -36,7 +36,8 @@ def save_picture(form_picture):
         return None
     filename = secure_filename(form_picture.filename)
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    final_name = f"{timestamp}_{filename}"
+    random_hex = secrets.token_hex(4)
+    final_name = f"{timestamp}_{random_hex}_{filename}"
     picture_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], final_name)
     form_picture.save(picture_path)
     return final_name
@@ -51,7 +52,8 @@ def save_base64_picture(data_url):
         ext = 'jpg'
     img_data = base64.b64decode(encoded)
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    final_name = f"{timestamp}_camera.{ext}"
+    random_hex = secrets.token_hex(4)
+    final_name = f"{timestamp}_{random_hex}_camera.{ext}"
     picture_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], final_name)
     with open(picture_path, 'wb') as f:
         f.write(img_data)
@@ -215,7 +217,10 @@ def post_item():
         # Generate verification code ONLY for LOST items
         if form.type.data == 'LOST':
             alphabet = string.ascii_uppercase + string.digits
-            code = ''.join(secrets.choice(alphabet) for i in range(8))
+            while True:
+                code = ''.join(secrets.choice(alphabet) for i in range(8))
+                if not Item.query.filter_by(verification_code=code).first():
+                    break
             item.verification_code = code
         else:
             item.verification_code = None
@@ -328,7 +333,7 @@ def claim_item(item_id):
     if form.validate_on_submit():
         code = form.verification_code.data.strip().upper()
         lost_item = Item.query.filter_by(verification_code=code, type='LOST', status='OPEN').first()
-        if lost_item:
+        if lost_item and lost_item.category_id == found_item.category_id:
             lost_item.status = 'CLAIMED'
             found_item.status = 'CLAIMED'
             db.session.commit()
@@ -341,6 +346,15 @@ def claim_item(item_id):
 # --- DATABASE INITIALIZATION (Run on Import) ---
 with app.app_context():
     db.create_all()
+    # Force column alter for Render PostgreSQL to fix login truncation bug
+    try:
+        if db.engine.name == 'postgresql':
+            db.session.execute(db.text('ALTER TABLE "user" ALTER COLUMN password TYPE VARCHAR(255);'))
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Migration error: {e}")
+
     # Create default categories if they don't exist
     if not Category.query.first():
         db.session.add(Category(name='Electronics'))

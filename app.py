@@ -110,7 +110,11 @@ def register():
     if form.validate_on_submit():
         hashed_pw = generate_password_hash(form.password.data)
         role = form.role.data if form.role.data else 'STUDENT'
-        user = User(username=form.username.data, email=form.email.data, password=hashed_pw, role=role, department=None)
+        
+        clean_username = form.username.data.strip()
+        clean_email = form.email.data.strip().lower()
+        
+        user = User(username=clean_username, email=clean_email, password=hashed_pw, role=role, department=None)
         db.session.add(user)
         db.session.commit()
         flash('Account created! You can now login.', 'success')
@@ -123,7 +127,10 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        clean_username = form.username.data.strip()
+        # Case insensitive lookup
+        user = User.query.filter(User.username.ilike(clean_username)).first()
+        
         if user and check_password_hash(user.password, form.password.data):
             if user.role == 'HOD':
                 flash('HOD accounts must log in via the dedicated HOD Portal.', 'warning')
@@ -277,7 +284,9 @@ def item_detail(item_id):
 def search():
     query = request.args.get('q')
     items = Item.query.filter(
-        (Item.title.contains(query)) | (Item.description.contains(query))
+        (Item.title.contains(query)) | 
+        (Item.description.contains(query)) |
+        (Item.location.contains(query))
     ).all() if query else []
     categories = Category.query.all()
     return render_template('home.html', items=items, categories=categories, title="Search Results")

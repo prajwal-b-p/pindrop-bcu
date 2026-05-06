@@ -28,15 +28,20 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto gap-4">
+                <ul class="navbar-nav mx-auto gap-4 align-items-center">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('search') }}">Search</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('integrity') }}">Trust Ledger</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <form action="{{ url_for('search') }}" method="GET" class="d-flex align-items-center m-0">
+                            <div class="input-group input-group-sm border-hairline bg-main rounded-0" style="width: 250px; transition: all 0.3s ease;">
+                                <input type="text" name="q" class="form-control bg-transparent border-0 text-white shadow-none fw-300" placeholder="SEARCH ITEM OR LOCATION..." value="{{ request.args.get('q', '') }}" style="font-size: 0.70rem; letter-spacing: 0.05em;" required>
+                                <button class="btn btn-link text-emerald border-0 px-3 hover-glow" type="submit"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
                     </li>
                 </ul>
 
